@@ -8,7 +8,6 @@ public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
 
-
     [SerializeField] TextMeshProUGUI cardText;
     [SerializeField] SpriteRenderer cardSprite;
     [SerializeField] GameObject selectIndicator;
@@ -23,19 +22,22 @@ public class Card : MonoBehaviour, IInteractable
     public enum Suit { DIAMONDS, CLUBS, HEARTS, SPADES }
     public Suit suit { get; private set; }
 
-
-
-
     int IInteractable.Priority => cardSprite.rendererPriority;
 
     public bool isGold;
 
-    public void InitCard()
+    public Card(int _id, bool _isGold)
     {
-        number = ParseIdToNumber(id);
-        suit = ParseIdToSuit(id);
+        id = _id;
+        isGold = _isGold;
+    }
+
+    public void InitCard(int _id = -1, bool _isGold = false)
+    {
+        number = ParseIdToNumber(_id > -1 ? _id : id);
+        suit = ParseIdToSuit(_id > -1 ? _id : id);
         cardText.text = number.ToString() + " of " + suit.ToString();
-        if (isGold)
+        if (isGold || _isGold)
         {
             cardSprite.color = Color.gold;
         }
