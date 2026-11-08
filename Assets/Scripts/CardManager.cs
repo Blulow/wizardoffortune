@@ -11,8 +11,7 @@ public class CardManager : MonoBehaviour
 {
     [SerializeField] Card card;
 
-    [SerializeField] private Vector2 initSpawnPoint = Vector2.zero;
-    [SerializeField] private Vector2 spawnOffset = new Vector2(1f, 0f);
+
 
     List<Card> handCards = new List<Card>();
     List<Card> selectedCards = new List<Card>();
@@ -20,6 +19,15 @@ public class CardManager : MonoBehaviour
 
     //List<Card> playingCards = new List<Card>();
     [SerializeField] Button playHandButton;
+
+    [Header("Spawn / Layout")]
+    [SerializeField] Transform deckPos;
+    [SerializeField] float staggerDelay = 0.08f;
+    [SerializeField] private Vector2 initSpawnPoint = Vector2.zero;
+    [SerializeField] private Vector2 spawnOffset = new Vector2(1f, 0f);
+
+    Vector2 deckSpawnPoint => deckPos.transform.position;
+
 
     int luckyNumber;
 
@@ -46,7 +54,6 @@ public class CardManager : MonoBehaviour
         playHandButton.onClick.AddListener(PlayCardDeck);
         playHandButton.interactable = false;
         DrawHand();
-
         GenerateLuckyNumber(new List<Card>());
         UpdateUI();
     }
@@ -56,18 +63,19 @@ public class CardManager : MonoBehaviour
         luckyNumber = cards.Count > 0 ? combo.baseNumber : UnityEngine.Random.Range(1, 14);
     }
 
+
     public void DrawHand()
     {
         for (int i = 0; i < handCardNum; i++)
         {
-            GameObject spawnedCard = SpawnCard();
-            AssignPos(spawnedCard, i);
+            Card spawned = SpawnCard().GetComponent<Card>();
+            AssignPos(spawned, i, i * staggerDelay);
         }
     }
 
     GameObject SpawnCard(int id = -1, bool? isGold = null)
     {
-        Card _card = Instantiate(card, Vector3.zero, Quaternion.identity);
+        Card _card = Instantiate(card, deckSpawnPoint, Quaternion.identity);
 
         _card.id = GetUniqueId();
         _card.isGold = UnityEngine.Random.Range(0, 100) < GetGoldenChance();
@@ -138,14 +146,12 @@ public class CardManager : MonoBehaviour
 
     void HandleCardClicked(Card c)
     {
-        if (c.IsSelected)
+        if (!c.IsSelected)
         {
-            c.SetSelected(false);
             selectedCards.Remove(c);
         }
         else
         {
-            c.SetSelected(true);
             selectedCards.Add(c);
         }
         playHandButton.interactable = selectedCards.Count > 0;
@@ -155,16 +161,27 @@ public class CardManager : MonoBehaviour
         sumText.text = "Sum: " + sum;
     }
 
-    void RemoveCard(Card c) // call this when playing or discarding
+    void LayoutHand(int firstNewIndex = int.MaxValue)
     {
-        c.Clicked -= HandleCardClicked;
-        selectedCards.Remove(c);
+        for (int i = 0; i < handCards.Count; i++)
+        {
+            float delay = i >= firstNewIndex ? (i - firstNewIndex) * staggerDelay : 0f;
+            handCards[i].Mover.SetSlot(GetSlotPosition(i), delay, 0 ,true);
+        }
     }
 
-    void ReplaceCardSlot(Card card)
+
+    void RefillHand()
     {
-        GameObject newCard = SpawnCard();
-        newCard.transform.position = card.transform.position;
+        int firstNew = handCards.Count;
+
+        while (handCards.Count < handCardNum)
+        {
+            Card c = SpawnCard().GetComponent<Card>();
+            c.transform.position = deckSpawnPoint; // every new card starts at the same spot
+        }
+
+        LayoutHand(firstNew);
     }
 
     void PlayCardDeck()
@@ -198,10 +215,12 @@ public class CardManager : MonoBehaviour
         selectedCards.Clear();
         foreach (Card card in cardsToPlay)
         {
-            ReplaceCardSlot(card);
+            card.CardPlayed();
             card.Clicked -= HandleCardClicked;
+            handCards.Remove(card);
             card.gameObject.SetActive(false);
         }
+        RefillHand();
     }
 
     float GetGoldenChance()
@@ -236,20 +255,25 @@ public class CardManager : MonoBehaviour
         return id;
     }
 
+    Vector2 GetSlotPosition(int index)
+    {
+        float center = (handCardNum - 1) * 0.5f;
+        return initSpawnPoint + spawnOffset * (index - center);
+    }
+
+
     bool ContainsId(List<Card> cards, int id)
     {
         foreach(Card card in cards) if (card.id == id) return true;
         return false;
     }
 
-    void AssignPos(GameObject go, int index)
-    {
-        int step = (index + 1) / 2;
-        int sign = (index % 2 == 1) ? 1 : -1;
-        Vector2 spawnPos = initSpawnPoint + spawnOffset * (step * sign);
-        go.transform.position = spawnPos;
-    }
 
+    void AssignPos(Card c, int index, float delay = 0f)
+    {
+        c.transform.position = deckSpawnPoint;                 // everything starts at one spot
+        c.Mover.SetSlot(GetSlotPosition(index), delay, 0, true);   // then slides to its slot
+    }
     void UpdateUI()
     {
         luckyNumberText.text = "Lucky Number: " + luckyNumber;

@@ -13,10 +13,17 @@ public class Card : MonoBehaviour, IInteractable
     [SerializeField] GameObject selectIndicator;
 
 
+    [SerializeField] Collider2D collider;
+    public CardMover Mover { get; private set; }
+    void Awake() => Mover = GetComponent<CardMover>();
+
+
     public event Action<Card> Clicked;
+    public event Action<bool> OnHover;
+    public event Action OnPlayed;
+
     public bool IsSelected { get; private set; }
 
-    bool selected = false;
     public int number { get; private set; }
 
     public enum Suit { DIAMONDS, CLUBS, HEARTS, SPADES }
@@ -31,6 +38,15 @@ public class Card : MonoBehaviour, IInteractable
         id = _id;
         isGold = _isGold;
     }
+
+
+    public void CardPlayed()
+    {
+
+        collider.enabled = false;
+        OnPlayed?.Invoke();
+    }
+
 
     public void InitCard(int _id = -1, bool _isGold = false)
     {
@@ -73,12 +89,16 @@ public class Card : MonoBehaviour, IInteractable
 
     void IInteractable.OnHoverEnter()
     {
-        transform.position = new Vector2(transform.position.x, transform.position.y + .2f);
+        //transform.position = new Vector2(transform.position.x, transform.position.y + .2f);
+        OnHover?.Invoke(true);
+
     }
 
     void IInteractable.OnHoverExit()
     {
-        transform.position = new Vector2(transform.position.x, transform.position.y - .2f);
+        
+        //transform.position = new Vector2(transform.position.x, transform.position.y - .2f);
+        OnHover?.Invoke(false);
     }
 
     public void SetSelected(bool value)
@@ -88,7 +108,13 @@ public class Card : MonoBehaviour, IInteractable
     }
 
 
+    void ToggleSelected()
+    {
+        SetSelected(!IsSelected);
+        Clicked?.Invoke(this);
+    }
 
-    void IInteractable.OnClick() => Clicked?.Invoke(this);
+
+    void IInteractable.OnClick() => ToggleSelected();
 
 }
