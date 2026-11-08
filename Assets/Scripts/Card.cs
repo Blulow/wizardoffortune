@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ public class Card : MonoBehaviour, IInteractable
     public int id = 0;
 
     [SerializeField] TextMeshProUGUI cardText;
-    [SerializeField] SpriteRenderer cardSprite;
+    [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite;
     [SerializeField] GameObject selectIndicator;
 
 
@@ -52,7 +53,9 @@ public class Card : MonoBehaviour, IInteractable
     {
         number = ParseIdToNumber(_id > -1 ? _id : id);
         suit = ParseIdToSuit(_id > -1 ? _id : id);
-        cardText.text = number.ToString() + " of " + suit.ToString();
+        //cardText.text = number.ToString() + " of " + suit.ToString();
+        numberSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Numbers/card_number_{number}.png");
+        suitSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Suits/card_suit_{(int)suit + 1}.png");
         if (isGold || _isGold)
         {
             cardSprite.color = Color.gold;

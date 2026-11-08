@@ -41,7 +41,8 @@ public class CardManager : MonoBehaviour
     [SerializeField] float baseGoldChance = 10;
     [SerializeField] float maxGoldChance = 30;
 
-    [SerializeField] TextMeshProUGUI luckyNumberText, luckBarText, failPenaltyText, goldenChanceText, sumText;
+    [SerializeField] TextMeshProUGUI luckyNumberText, luckText, failPenaltyText, goldenChanceText, sumText;
+    [SerializeField] Image luckbarImage;
 
     List<Card> pairPool = new List<Card>();
     List<Card> straightPool = new List<Card>();
@@ -158,7 +159,7 @@ public class CardManager : MonoBehaviour
 
         int sum = 0;
         foreach (Card card in selectedCards) sum += card.number;
-        sumText.text = "Sum: " + sum;
+        sumText.text = sum.ToString();
     }
 
     void LayoutHand(int firstNewIndex = int.MaxValue)
@@ -276,9 +277,10 @@ public class CardManager : MonoBehaviour
     }
     void UpdateUI()
     {
-        luckyNumberText.text = "Lucky Number: " + luckyNumber;
-        luckBarText.text = "Luck: " + luck + " / " + maxLuck;
-        failPenaltyText.text = "Failure Penalty: " + GetPenalty();
-        goldenChanceText.text = $"Golden Card Chance: {GetGoldenChance():F1}%";
+        luckyNumberText.text = luckyNumber.ToString();
+        luckText.text = luck.ToString();
+        luckbarImage.fillAmount = Mathf.Clamp01((float)luck / (float)maxLuck);
+        failPenaltyText.text = GetPenalty().ToString();
+        goldenChanceText.text = $"{GetGoldenChance():F1}%";
     }
 }
