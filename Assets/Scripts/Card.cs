@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+
 public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
@@ -12,6 +14,12 @@ public class Card : MonoBehaviour, IInteractable
     [SerializeField] TextMeshProUGUI cardText;
     [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite;
     [SerializeField] GameObject selectIndicator;
+
+
+    [SerializeField] PopMover numberShow;
+    [SerializeField] PopMover suitShow;
+    [SerializeField] Transform feedbackSpawnPoint;
+
 
 
     [SerializeField] Collider2D collider;
@@ -115,6 +123,26 @@ public class Card : MonoBehaviour, IInteractable
     {
         SetSelected(!IsSelected);
         Clicked?.Invoke(this);
+    }
+
+
+    public TweenMover ShowNumber(int number)
+    {
+        PopMover mover = Instantiate(numberShow, feedbackSpawnPoint.position, Quaternion.identity);
+        if (mover != null) mover.PlayPop(0f,number.ToString());
+        else Debug.LogWarning("numberShow prefab has no TextPopReveal on its label", numberShow);
+
+        return mover;
+    }
+
+    public TweenMover ShowSuit(Sprite sprite)
+    {
+        PopMover mover = Instantiate(suitShow, feedbackSpawnPoint.position, Quaternion.identity);
+        SpriteRenderer spriteRen  = mover.GetComponent<SpriteRenderer>();
+        spriteRen.sprite = sprite;
+        mover.PlayPop();
+        return mover;
+
     }
 
 
