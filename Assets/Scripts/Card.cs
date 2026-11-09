@@ -1,16 +1,25 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+
+
 
 public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
 
     [SerializeField] TextMeshProUGUI cardText;
-    [SerializeField] SpriteRenderer cardSprite;
+    [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite;
     [SerializeField] GameObject selectIndicator;
+
+
+    [SerializeField] PopMover numberShow;
+    [SerializeField] PopMover suitShow;
+    [SerializeField] Transform feedbackSpawnPoint;
+
 
 
     [SerializeField] Collider2D collider;
@@ -52,7 +61,9 @@ public class Card : MonoBehaviour, IInteractable
     {
         number = ParseIdToNumber(_id > -1 ? _id : id);
         suit = ParseIdToSuit(_id > -1 ? _id : id);
-        cardText.text = number.ToString() + " of " + suit.ToString();
+        //cardText.text = number.ToString() + " of " + suit.ToString();
+        numberSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Numbers/card_number_{number}.png");
+        suitSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Suits/card_suit_{(int)suit + 1}.png");
         if (isGold || _isGold)
         {
             cardSprite.color = Color.gold;
@@ -112,6 +123,26 @@ public class Card : MonoBehaviour, IInteractable
     {
         SetSelected(!IsSelected);
         Clicked?.Invoke(this);
+    }
+
+
+    public TweenMover ShowNumber(int number)
+    {
+        PopMover mover = Instantiate(numberShow, feedbackSpawnPoint.position, Quaternion.identity);
+        if (mover != null) mover.PlayPop(0f,number.ToString());
+        else Debug.LogWarning("numberShow prefab has no TextPopReveal on its label", numberShow);
+
+        return mover;
+    }
+
+    public TweenMover ShowSuit(Sprite sprite)
+    {
+        PopMover mover = Instantiate(suitShow, feedbackSpawnPoint.position, Quaternion.identity);
+        SpriteRenderer spriteRen  = mover.GetComponent<SpriteRenderer>();
+        spriteRen.sprite = sprite;
+        mover.PlayPop();
+        return mover;
+
     }
 
 
