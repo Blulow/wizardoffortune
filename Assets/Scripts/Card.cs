@@ -5,8 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-
 public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
@@ -36,13 +34,6 @@ public class Card : MonoBehaviour, IInteractable
     int IInteractable.Priority => cardSprite.rendererPriority;
 
     public bool isGold;
-
-    public Card(int _id, bool _isGold)
-    {
-        id = _id;
-        isGold = _isGold;
-    }
-
 
     public void CardPlayed()
     {

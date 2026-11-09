@@ -11,6 +11,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.GPUSort;
 
+struct CardData
+{
+    public int id;
+    public bool isGold;
+
+    public CardData(int _id, bool _isGold)
+    {
+        id = _id;
+        isGold = _isGold;
+    }
+}
+
 public class CardManager : MonoBehaviour
 {
 
@@ -56,9 +68,9 @@ public class CardManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI luckyNumberText, luckText, failPenaltyText, goldenChanceText, sumText;
     [SerializeField] Image luckbarImage;
 
-    List<Card> pairPool = new List<Card>();
-    List<Card> straightPool = new List<Card>();
-    List<Card> flushPool = new List<Card>();
+    List<CardData> pairPool = new List<CardData>();
+    List<CardData> straightPool = new List<CardData>();
+    List<CardData> flushPool = new List<CardData>();
 
     void Start()
     {
@@ -80,6 +92,17 @@ public class CardManager : MonoBehaviour
 
     public void DrawHand()
     {
+        //Card spawned = SpawnCard(11, true).GetComponent<Card>();
+        //AssignPos(spawned, 0, 0 * staggerDelay);
+        //Card spawned2 = SpawnCard(10, false).GetComponent<Card>();
+        //AssignPos(spawned2, 1, 1 * staggerDelay);
+        //Card spawned3 = SpawnCard(9, false).GetComponent<Card>();
+        //AssignPos(spawned3, 2, 2 * staggerDelay);
+        //Card spawned4 = SpawnCard(8, false).GetComponent<Card>();
+        //AssignPos(spawned4, 3, 3 * staggerDelay);
+        //Card spawned5 = SpawnCard(7, false).GetComponent<Card>();
+        //AssignPos(spawned5, 4, 4 * staggerDelay);
+
         for (int i = 0; i < handCardNum; i++)
         {
             Card spawned = SpawnCard().GetComponent<Card>();
@@ -94,7 +117,12 @@ public class CardManager : MonoBehaviour
         _card.id = GetUniqueId();
         _card.isGold = UnityEngine.Random.Range(0, 100) < GetGoldenChance();
 
-        if ((isGold ?? _card.isGold) && id == -1 && handCards.Count == handCardNum) return GenerateCardFromPools().gameObject;
+        if ((isGold ?? _card.isGold) && handCards.Count != handCardNum)
+        {
+            CardData card = GenerateCardFromPools();
+            _card.id = card.id;
+            _card.isGold = card.isGold;
+        }
 
         _card.InitCard();
 
@@ -115,23 +143,24 @@ public class CardManager : MonoBehaviour
         return cards;
     }
 
-    Card GenerateCardFromPools()
+    CardData GenerateCardFromPools()
     {
         //if (handCards.Count == handCardNum) return null;
 
         List<Card> cards = GetLuckyNumberCards();
 
-        for (int i = 0; i <= 3; i++) pairPool.Add(new Card(i * 13 + luckyNumber, true));
-        for (int i = luckyNumber - 4; i <= luckyNumber + 4; i++) straightPool.Add(new Card(UnityEngine.Random.Range(0, 4) * 13 + (i - 1) % 13, true));
+        for (int i = 0; i <= 3; i++) pairPool.Add(new CardData(i * 13 + luckyNumber, true));
+        for (int i = luckyNumber - 4; i <= luckyNumber + 4; i++) straightPool.Add(new CardData(UnityEngine.Random.Range(0, 4) * 13 + (i - 1) % 13, true));
         if (cards.Count > 0)
         {
             for (int c = 0; c < cards.Count; c++)
             {
-                for (int i = 0; i < 13; i++) flushPool.Add(new Card((int)cards[c].suit * 13 + i, true));
+                for (int i = 0; i < 13; i++) flushPool.Add(new CardData((int)cards[c].suit * 13 + i, true));
             }
         }
 
-        (List<Card> pool, Card card) cardData = GetCardFromPools();
+        List<List<CardData>> pools = new List<List<CardData>> { pairPool, straightPool, flushPool };
+        (List<CardData> pool, CardData card) cardData = GetCardFromPools(pools);
 
         int j = 0;
         while (j < handCards.Count)
@@ -139,22 +168,22 @@ public class CardManager : MonoBehaviour
             if (handCards[j].id == cardData.card.id)
             {
                 cardData.pool.RemoveAll(e => e.id == cardData.card.id);
-                cardData = GetCardFromPools();
+                cardData = GetCardFromPools(pools);
 
                 j = 0;
             }
             else j++;
         }
 
-        Card card = cardData.card;
+        CardData card = cardData.card;
         return card;
     }
 
-    (List<Card> pool, Card card) GetCardFromPools()
+    (List<CardData> pool, CardData card) GetCardFromPools(List<List<CardData>> pools)
     {
-        List<List<Card>> validPools = new List<List<Card>> { pairPool, straightPool, flushPool }.Where(e => e.Count > 0).ToList();
-        List<Card> pool = validPools[UnityEngine.Random.Range(0, validPools.Count)];
-        Card card = pool[UnityEngine.Random.Range(0, pool.Count)];
+        List<List<CardData>> validPools = pools.Where(e => e.Count > 0).ToList();
+        List<CardData> pool = validPools[UnityEngine.Random.Range(0, validPools.Count)];
+        CardData card = pool[UnityEngine.Random.Range(0, pool.Count)];
         return (pool, card);
     }
 
