@@ -15,7 +15,7 @@ public class CardMover : TweenMover
     [Header("Card sprites")]
     [SerializeField] SpriteRenderer face;
     [SerializeField] Sprite backSprite;
-    [SerializeField] Sprite frontSprite;
+    [SerializeField] public Sprite frontSprite;
 
     // roll is unused now; it stays so existing positional calls keep compiling.
     // faceTop = true  -> starts showing the back, flips to the front (a deal)

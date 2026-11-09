@@ -11,21 +11,16 @@ public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
 
-    [SerializeField] TextMeshProUGUI cardText;
     [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite;
-    [SerializeField] GameObject selectIndicator;
-
+    [SerializeField] Sprite goldenSprite;
 
     [SerializeField] PopMover numberShow;
     [SerializeField] PopMover suitShow;
     [SerializeField] Transform feedbackSpawnPoint;
 
-
-
     [SerializeField] Collider2D collider;
     public CardMover Mover { get; private set; }
     void Awake() => Mover = GetComponent<CardMover>();
-
 
     public event Action<Card> Clicked;
     public event Action<bool> OnHover;
@@ -66,7 +61,10 @@ public class Card : MonoBehaviour, IInteractable
         suitSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Suits/card_suit_{(int)suit + 1}.png");
         if (isGold || _isGold)
         {
-            cardSprite.color = Color.gold;
+            //cardSprite.sprite = goldenSprite;
+            GetComponent<CardMover>().frontSprite = goldenSprite;
+            numberSprite.color = new Color32(150, 128, 89, 255);
+            suitSprite.color = new Color32(150, 128, 89, 255);
         }
     }
 
@@ -115,7 +113,6 @@ public class Card : MonoBehaviour, IInteractable
     public void SetSelected(bool value)
     {
         IsSelected = value;
-        selectIndicator.gameObject.SetActive(value);
     }
 
 

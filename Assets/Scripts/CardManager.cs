@@ -66,6 +66,7 @@ public class CardManager : MonoBehaviour
 
         playHandButton.onClick.AddListener(PlayCardDeck);
         playHandButton.interactable = false;
+        playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
         DrawHand();
         GenerateLuckyNumber(new List<Card>());
         UpdateUI();
@@ -168,6 +169,7 @@ public class CardManager : MonoBehaviour
             selectedCards.Add(c);
         }
         playHandButton.interactable = selectedCards.Count > 0;
+        playHandButton.GetComponent<OffsetContentOnClick>().SetOffsetOnOff(!playHandButton.interactable);
 
         int sum = 0;
         foreach (Card card in selectedCards) sum += card.number;
@@ -235,6 +237,7 @@ public class CardManager : MonoBehaviour
         if (isPlaying) return;
         isPlaying = true;
         playHandButton.interactable = false;
+        playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
 
         try
         {
@@ -314,6 +317,7 @@ public class CardManager : MonoBehaviour
         {
             isPlaying = false;
             playHandButton.interactable = selectedCards.Count > 0;
+            playHandButton.GetComponent<OffsetContentOnClick>().SetOffsetOnOff(!playHandButton.interactable);
         }
     }
 
