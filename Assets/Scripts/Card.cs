@@ -145,4 +145,12 @@ public class Card : MonoBehaviour, IInteractable
 
     void IInteractable.OnClick() => ToggleSelected();
 
+    public void SetRenderPriority(int r)
+    {
+        cardSprite.sortingOrder = r;
+        numberSprite.sortingOrder = r + 1;
+        suitSprite.sortingOrder = r + 1;
+        //Debug.Log(cardSprite.soe);
+    }
+
 }

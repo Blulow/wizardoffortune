@@ -182,6 +182,7 @@ public class CardManager : MonoBehaviour
         {
             float delay = i >= firstNewIndex ? (i - firstNewIndex) * staggerDelay : 0f;
             handCards[i].Mover.SetSlot(GetSlotPosition(i), delay, 0 ,true, i >= firstNewIndex);
+            handCards[i].SetRenderPriority(5 - i);
         }
     }
 
@@ -390,6 +391,7 @@ public class CardManager : MonoBehaviour
     {
         c.transform.position = deckSpawnPoint;                 // everything starts at one spot
         c.Mover.SetSlot(GetSlotPosition(index), delay, 0, true,true);   // then slides to its slot
+        c.SetRenderPriority(5 - index);
     }
     void UpdateUI()
     {

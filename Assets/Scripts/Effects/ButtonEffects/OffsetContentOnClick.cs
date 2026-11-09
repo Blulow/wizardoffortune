@@ -12,7 +12,6 @@ public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointer
     public void OnPointerDown(PointerEventData eventData)
     {
         OffsetOn();
-        Debug.Log("on " + offset);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -20,7 +19,6 @@ public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointer
         if (!GetComponent<Button>().interactable) return;
 
         OffsetOff();
-        Debug.Log("off " + offset);
     }
 
     public void SetOffsetOnOff(bool offset)
@@ -37,7 +35,6 @@ public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointer
         {
             c.position = (Vector2)c.transform.position + offset;
         }
-        Debug.Log("on2 " + offset);
 
         isOn = true;
     }
@@ -50,7 +47,6 @@ public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointer
         {
             c.position = (Vector2)c.transform.position - offset;
         }
-        Debug.Log("off2 " + offset);
         
         isOn = false;
     }
