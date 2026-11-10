@@ -101,7 +101,7 @@ public class CardManager : MonoBehaviour
         //AssignPos(spawned3, 2, 2 * staggerDelay);
         //Card spawned4 = SpawnCard(8, false).GetComponent<Card>();
         //AssignPos(spawned4, 3, 3 * staggerDelay);
-        //Card spawned5 = SpawnCard(23, false).GetComponent<Card>();
+        //Card spawned5 = SpawnCard(23, true).GetComponent<Card>();
         //AssignPos(spawned5, 4, 4 * staggerDelay);
 
         for (int i = 0; i < handCardNum; i++)
@@ -150,8 +150,9 @@ public class CardManager : MonoBehaviour
 
         List<Card> cards = GetLuckyNumberCards();
 
+        Func<int, int, int> mod = (n, m) => ((n % m) + m) % m;
         for (int i = 0; i <= 3; i++) pairPool.Add(new CardData(i * 13 + luckyNumber, true));
-        for (int i = luckyNumber - 4; i <= luckyNumber + 4; i++) straightPool.Add(new CardData(UnityEngine.Random.Range(0, 4) * 13 + (i - 1) % 13, true));
+        for (int i = luckyNumber - 4; i <= luckyNumber + 4; i++) straightPool.Add(new CardData(UnityEngine.Random.Range(0, 4) * 13 + mod(i - 1, 13), true));
         if (cards.Count > 0)
         {
             for (int c = 0; c < cards.Count; c++)
