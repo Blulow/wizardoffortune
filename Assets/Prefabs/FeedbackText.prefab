@@ -204,6 +204,12 @@ MonoBehaviour:
   startScale: 0.6
   pinchFraction: 0.6
   shakeDuration: 0.3
+  knockDistance: 0.6
+  knockTime: 0.12
+  fallDistance: 3
+  fallTime: 0.5
+  knockSpin: 90
+  stopShort: 0.6
   popTargets: []
   label: {fileID: 5347219875122637680}
   popStagger: 0.1

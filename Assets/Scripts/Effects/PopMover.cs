@@ -11,6 +11,8 @@ public class PopMover : TweenMover
     [SerializeField] float popDuration = 0.25f;
     [SerializeField] float popOvershoot = 1.7f;
 
+    float labelBaseAlpha;
+
     Vector3 rootScale;
     Vector3[] popBaseScales;
     Sequence popTween;
@@ -22,6 +24,19 @@ public class PopMover : TweenMover
         popBaseScales = new Vector3[popTargets.Length];
         for (int i = 0; i < popTargets.Length; i++)
             popBaseScales[i] = popTargets[i].localScale;
+        if (label != null) labelBaseAlpha = label.alpha;
+    }
+
+    protected override void AddFadeTweens(Sequence seq, float at, float duration)
+    {
+        if (label == null) return;
+        seq.Insert(at, DOTween.To(() => label.alpha, a => label.alpha = a, 0f, duration)
+                              .SetEase(Ease.InQuad));
+    }
+
+    protected override void RestoreFade()
+    {
+        if (label != null) label.alpha = labelBaseAlpha;
     }
 
     protected override void OnDisable()

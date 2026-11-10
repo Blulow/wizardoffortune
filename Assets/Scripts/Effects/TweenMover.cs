@@ -22,6 +22,21 @@ public class TweenMover : MonoBehaviour
     [Header("Shake")]
     [SerializeField] float shakeDuration = 0.3f;
 
+    [Header("Knockback")]
+    [SerializeField] float knockDistance = 0.6f;
+    [SerializeField] float knockTime = 0.12f;
+    [SerializeField] float fallDistance = 3f;
+    [SerializeField] float fallTime = 0.5f;
+    [SerializeField] float knockSpin = 90f;
+    [SerializeField] float stopShort = 0.3f;
+    Sequence fadeTween;
+
+
+    Vector2 knockDir = Vector2.up;
+    Sequence knockTween;
+    SpriteRenderer[] fadeSprites;
+    float[] spriteBaseAlpha;
+
     protected Vector2 slotPos, lift;
     Vector3 baseScale, pinchBaseScale;
 
@@ -33,8 +48,88 @@ public class TweenMover : MonoBehaviour
         baseScale = transform.localScale;
         if (pinchTarget != null) pinchBaseScale = pinchTarget.localScale;
         slotPos = transform.position;
+        fadeSprites = GetComponentsInChildren<SpriteRenderer>(true);
+        spriteBaseAlpha = new float[fadeSprites.Length];
+        for (int i = 0; i < fadeSprites.Length; i++) spriteBaseAlpha[i] = fadeSprites[i].color.a;
     }
 
+
+    protected virtual void AddFadeTweens(Sequence seq, float at, float duration) { }
+    protected virtual void RestoreFade() { }
+
+
+    public Tween ReachKnockback(Vector2 target, float delay = 0f)
+    {
+        Vector2 toTarget = target - (Vector2)transform.position;
+        knockDir = toTarget.sqrMagnitude > 0.0001f ? -toTarget.normalized : Vector2.up;
+
+        slotPos = target + knockDir * stopShort;
+        return PlayMove(slotMove, delay);
+    }
+
+
+    // ---------- Fade ----------
+
+    // Fades all sprites (and anything the subclass adds via AddFadeTweens) to zero alpha.
+    public Tween PlayFade(float delay = 0f, float duration = 0.5f)
+    {
+        if (this == null) return null;
+
+        fadeTween?.Kill();
+        fadeTween = DOTween.Sequence().SetDelay(delay).SetLink(gameObject);
+
+        foreach (var s in fadeSprites)
+            fadeTween.Join(s.DOFade(0f, duration).SetEase(Ease.InQuad));
+
+        AddFadeTweens(fadeTween, 0f, duration);
+
+        return fadeTween;
+    }
+
+    public void ResetFade()
+    {
+        fadeTween?.Kill();
+        for (int i = 0; i < fadeSprites.Length; i++)
+        {
+            var c = fadeSprites[i].color; c.a = spriteBaseAlpha[i]; fadeSprites[i].color = c;
+        }
+        RestoreFade();
+    }
+
+    public Tween ApplyKnockback(float delay = 0f)
+    {
+        if (this == null) return null;
+
+        moveTween?.Kill();
+        tiltTween?.Kill();
+        shakeTween?.Kill();
+        knockTween?.Kill();
+
+        Vector3 hit = transform.position + (Vector3)(knockDir * knockDistance);
+        Vector3 end = hit + Vector3.down * fallDistance;
+        float spin = (knockDir.x >= 0f ? -1f : 1f) * knockSpin;
+
+        knockTween = DOTween.Sequence().SetDelay(delay).SetLink(gameObject);
+
+        knockTween.Append(transform.DOMove(hit, knockTime).SetEase(Ease.OutQuad));
+        knockTween.Join(transform.DORotate(new Vector3(0f, 0f, spin * 0.3f), knockTime));
+
+        knockTween.Append(transform.DOMove(end, fallTime).SetEase(Ease.InQuad));
+        knockTween.Join(transform.DORotate(new Vector3(0f, 0f, spin), fallTime));
+
+        // Fade starts when the fall starts
+        knockTween.Insert(knockTime, PlayFade(0f, fallTime));
+
+        knockTween.OnComplete(() =>
+        {
+            transform.rotation = Quaternion.identity;
+            ResetFade();
+            gameObject.SetActive(false);
+        });
+
+        return knockTween;
+    }
+    
     protected virtual void OnDisable()
     {
         moveTween?.Kill();
@@ -137,7 +232,4 @@ public class TweenMover : MonoBehaviour
     {
         if (t != null && t.IsActive()) await t.AsyncWaitForCompletion();
     }
-
-
-
 }

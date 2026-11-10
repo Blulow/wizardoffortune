@@ -4,6 +4,8 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+
 
 public class Card : MonoBehaviour, IInteractable
 {
@@ -15,6 +17,10 @@ public class Card : MonoBehaviour, IInteractable
     [SerializeField] PopMover numberShow;
     [SerializeField] PopMover suitShow;
     [SerializeField] Transform feedbackSpawnPoint;
+
+    [SerializeField] ParticleSystem particles;
+
+    [SerializeField] SpriteRenderer flash;
 
     [SerializeField] Collider2D collider;
     public CardMover Mover { get; private set; }
@@ -57,6 +63,7 @@ public class Card : MonoBehaviour, IInteractable
             numberSprite.color = new Color32(150, 128, 89, 255);
             suitSprite.color = new Color32(150, 128, 89, 255);
         }
+        Debug.Log(numberSprite.sprite + " " + number);
     }
 
 
@@ -133,14 +140,39 @@ public class Card : MonoBehaviour, IInteractable
 
     }
 
+    public TweenMover PopInfo(bool popNum)
+    {
+        if (popNum)
+        {
+            numberSprite.DOColor(new Color(0.8f, 0.75f, 0.18f), 0.5f)
+                        .SetEase(Ease.OutQuad);
+            numberSprite.GetComponent<PopMover>().PlayPop();
+            particles.transform.position = numberSprite.transform.position;
+        }
+        else
+        {
+            suitSprite.DOColor(new Color(0.8f, 0.75f, 0.18f), 0.5f)
+                        .SetEase(Ease.OutQuad);
+            suitSprite.GetComponent<PopMover>().PlayPop();
+            particles.transform.position = suitSprite.transform.position;
+        }
+        particles.gameObject.SetActive(true);
+
+        PopMover mover = particles.GetComponent<PopMover>();
+        mover.PlayPop();
+        return mover;
+    }
+
 
     void IInteractable.OnClick() => ToggleSelected();
 
     public void SetRenderPriority(int r)
     {
         cardSprite.sortingOrder = r;
-        numberSprite.sortingOrder = r + 1;
-        suitSprite.sortingOrder = r + 1;
+        numberSprite.sortingOrder = r + 2;
+        suitSprite.sortingOrder = r + 2;
+        particles.GetComponent<ParticleSystemRenderer>().sortingOrder = r + 1;
+        flash.sortingOrder = r + 1;
         //Debug.Log(cardSprite.soe);
     }
 
