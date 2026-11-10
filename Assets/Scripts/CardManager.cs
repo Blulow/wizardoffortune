@@ -11,6 +11,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.Rendering.GPUSort;
 
 struct CardData
@@ -50,8 +51,11 @@ public class CardManager : MonoBehaviour
     [SerializeField] Vector3 liftOffset = new Vector2(0f, 2f);
     [SerializeField] PopMover sumOut;
     [SerializeField] PopMover clover;
-    [SerializeField] Transform cloverSpawn, cloverBarPos;
+    [SerializeField] Transform cloverSpawn, cloverBarPos, barPos;
     [SerializeField] Sprite clubsSprite, heartsSprite, spadesSprite, diamondsSprite;
+    [SerializeField] TweenMover barMover;
+    [SerializeField] PopMover luckyNumMover;
+    
 
 
 
@@ -60,6 +64,7 @@ public class CardManager : MonoBehaviour
 
     Vector2 deckSpawnPoint => deckPos.transform.position;
 
+    Vector3 outSumOriginalPos;
 
     int luckyNumber;
 
@@ -94,6 +99,7 @@ public class CardManager : MonoBehaviour
         GenerateLuckyNumber(new List<Card>());
         UpdateUI();
         sumText.text = "0";
+        outSumOriginalPos = sumOut.transform.position;
     }
 
     void GenerateLuckyNumber(List<Card> cards, Combo combo = new Combo())
@@ -247,7 +253,7 @@ public class CardManager : MonoBehaviour
         Tween tween = null;
         for (int i  = 0; i < cards.Count; i++) 
         {
-            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.3f * i + 2f, 0f, true, true, false);
+            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.3f * i + 1f, 0f, true, true, false);
 
         }
         await tween.AsyncWaitForCompletion();
@@ -258,7 +264,7 @@ public class CardManager : MonoBehaviour
         List<Card> cards,
         List<Func<Card, TweenMover>> feedbacks,
         Func<Card, TweenMover> mergeFeedback = null,
-        int outCome = 0)
+        int outCome = -1)
     {
         if (cards.Count == 0) return;
 
@@ -279,18 +285,24 @@ public class CardManager : MonoBehaviour
 
                 await TweenMover.Wait(c.Mover.Shake());
             }
-            await MergeObject(popups, outCome);
+            if (outCome != 0)
+            {
+                await MergeObject(popups, outCome);
+            }
         }
         else
         {
+            Debug.Log("Outcome: " + outCome);
             Card card = cards[0];
             foreach (var feedback in feedbacks) feedback(card);
-
             var pop = PopOutcome(outCome);
             await TweenMover.Wait(card.Mover.Shake());
             await pop;
         }
     }
+
+
+
 
     async void PlayCardDeck()
     {
@@ -302,6 +314,7 @@ public class CardManager : MonoBehaviour
 
         try
         {
+            bool reduceLuck = false;
             bool addLuck = false;
             int combNum = 0;
             var cardsToPlay = new List<Card>(selectedCards);
@@ -317,7 +330,7 @@ public class CardManager : MonoBehaviour
                 addLuck = true;
                 combNum = luckyNumber;
                 mergeFeedback = c => c.ShowNumber(c.number);
-                luck = Mathf.Min(maxLuck, luck + reward);
+               
                 failStreak = 0;
             }
 
@@ -333,21 +346,24 @@ public class CardManager : MonoBehaviour
                 feedbacks.Add(c => c.PopInfo(true));
 
             if (HasGolden(cardsToPlay) && combo.hasCombo && HasLuckyNumber(cardsToPlay))
+            {
                 GenerateLuckyNumber(cardsToPlay, combo);
+                luckyNumMover.PlayPop(luckyNumber);
+
+            }
 
             await MoveCardsToPlay(cardsToPlay);
 
             // Penalty
             if (CentralMechanics.GetCardSum(cardsToPlay) != luckyNumber && !combo.hasCombo)
             {
+                reduceLuck = true;
                 int penaltyPerCard = GetPenalty();
                 mergeFeedback = c => c.ShowNumber(-penaltyPerCard);
                 combNum = -penaltyPerCard * cardsToPlay.Count;
-                luck = Mathf.Max(0, luck - penaltyPerCard * cardsToPlay.Count);
                 failStreak++;
             }
 
-            UpdateUI();
 
             await ShakeCards(cardsToPlay, feedbacks, mergeFeedback, combNum);
 
@@ -355,6 +371,13 @@ public class CardManager : MonoBehaviour
             {
                 await SpawnClovers(reward);
             }
+            else if (reduceLuck)
+            {
+                await DoDamage(combNum);
+            }
+
+            UpdateUI();
+
 
             await GetRidOfPlayedCards(cardsToPlay);
 
@@ -383,6 +406,31 @@ public class CardManager : MonoBehaviour
         }
     }
 
+
+    async Task DoDamage(int reduceNum)
+    {
+        Vector3 vector3 = sumOut.transform.position;
+        await TweenMover.Wait(sumOut.ReachKnockback(barPos.transform.position, 1f));
+        int newLuckAmount = Mathf.Max(0, luck + reduceNum);
+        SetValue(luckText, luck, newLuckAmount);
+        float target =  Mathf.Clamp01((float)newLuckAmount / (float)maxLuck);
+        luckbarImage.DOFillAmount(target, 0.6f)
+        .SetEase(Ease.OutCubic);
+        luck = newLuckAmount;
+        barMover.Shake(0f, 10f, 4f);
+        await TweenMover.Wait(sumOut.ApplyKnockback());
+        sumOut.transform.position = vector3;
+        sumOut.gameObject.SetActive(false);
+
+    }
+
+    public void SetValue(TextMeshProUGUI label,float from, float target, float duration = 0.6f)
+    {
+        DOVirtual.Float(from, target, duration,
+            v => label.text = Mathf.RoundToInt(v).ToString())
+            .SetEase(Ease.OutCubic);
+    }
+
     float GetGoldenChance()
     {
         return Mathf.Clamp(baseGoldChance * luck / baseLuck, 0, maxGoldChance);
@@ -407,7 +455,7 @@ public class CardManager : MonoBehaviour
             foreach (TweenMover m in tweenMovers)
                 tasks.Add(TweenMover.Wait(m.PlayFade(0f, 0.3f)));
         }
-                    tasks.Add(PopOutcome(outCome));  
+        tasks.Add(PopOutcome(outCome));  
 
 
         await Task.WhenAll(tasks);
@@ -531,11 +579,19 @@ public class CardManager : MonoBehaviour
 
         await Task.WhenAll(tasks);
 
+        await Task.Delay(500);
+
         foreach(PopMover pop in popMovers)
         {
             await TweenMover.Wait(pop.MoveTo(cloverBarPos.position));
+            luck = Mathf.Min(maxLuck, luck + 1);
+            luckText.text = luck.ToString();
+            luckbarImage.fillAmount = Mathf.Clamp01((float)luck / (float)maxLuck);
+            barMover.Shake(0f, 0.3f, 1f);
             pop.gameObject.SetActive(false);
         }
+
+        sumOut.gameObject.SetActive(false);
     }
 
 }
