@@ -93,7 +93,7 @@ public class CardManager : MonoBehaviour
 
     public void DrawHand()
     {
-        //Card spawned = SpawnCard(11, true).GetComponent<Card>();
+        //Card spawned = SpawnCard(11, false).GetComponent<Card>();
         //AssignPos(spawned, 0, 0 * staggerDelay);
         //Card spawned2 = SpawnCard(10, false).GetComponent<Card>();
         //AssignPos(spawned2, 1, 1 * staggerDelay);
@@ -101,7 +101,7 @@ public class CardManager : MonoBehaviour
         //AssignPos(spawned3, 2, 2 * staggerDelay);
         //Card spawned4 = SpawnCard(8, false).GetComponent<Card>();
         //AssignPos(spawned4, 3, 3 * staggerDelay);
-        //Card spawned5 = SpawnCard(7, false).GetComponent<Card>();
+        //Card spawned5 = SpawnCard(23, false).GetComponent<Card>();
         //AssignPos(spawned5, 4, 4 * staggerDelay);
 
         for (int i = 0; i < handCardNum; i++)
@@ -115,7 +115,7 @@ public class CardManager : MonoBehaviour
     {
         Card _card = Instantiate(card, deckSpawnPoint, Quaternion.identity);
 
-        _card.id = GetUniqueId();
+        _card.id = id > -1 ? id : GetUniqueId();
         _card.isGold = UnityEngine.Random.Range(0, 100) < GetGoldenChance();
 
         if ((isGold ?? _card.isGold) && handCards.Count != handCardNum)
