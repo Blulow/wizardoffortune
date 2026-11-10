@@ -6,6 +6,7 @@ Shader "Custom/Background"
         [MainTexture] _BaseMap("Base Map", 2D) = "white" {}
         _TextureSize("Texture Size", Vector) = (1920, 1080, 0, 0)
         _ValidLayerCount("Layer Count", Int) = 0
+        _HashStrength("Hash Strength", Float) = 3
     }
 
     SubShader
@@ -50,6 +51,7 @@ Shader "Custom/Background"
                 float4 _BaseMap_ST;
                 float2 _TextureSize;
                 int _ValidLayerCount;
+                float _HashStrength;
             CBUFFER_END
 
             struct CircleLayer {
@@ -126,7 +128,7 @@ Shader "Custom/Background"
                     time * layer.noiseSpeed * 0.7
                 );
                 
-                float noise = AnimatedChunkNoise(uv, 3.0, layer.noiseSpeed) + ValueNoise(noiseUV);
+                float noise = AnimatedChunkNoise(uv, _HashStrength, layer.noiseSpeed) + ValueNoise(noiseUV);
                 float pulse = layer.pulseAmount * sin(time * layer.pulseSpeed);
 
                 float radius = layer.radius + pulse + noise * layer.noiseStrength;

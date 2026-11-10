@@ -82,6 +82,7 @@ public class CardManager : MonoBehaviour
         DrawHand();
         GenerateLuckyNumber(new List<Card>());
         UpdateUI();
+        sumText.text = "0";
     }
 
     void GenerateLuckyNumber(List<Card> cards, Combo combo = new Combo())

@@ -30,6 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Alpha: 0.5
+    - _HashStrength: 3.5
     - _ValidLayerCount: 3
     m_Colors:
     - _BaseColor: {r: 0.5491581, g: 0.2488643, b: 0.7207546, a: 1}

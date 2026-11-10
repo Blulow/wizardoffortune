@@ -1102,7 +1102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0.8961117, a: 1}
+  m_Color: {r: 0.79215693, g: 0.227451, b: 0.65882355, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1667,8 +1667,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287988056
-  m_fontColor: {r: 0.34321818, g: 0.5061111, b: 0.5849056, a: 1}
+    rgba: 4290682719
+  m_fontColor: {r: 0.3745034, g: 0.6224479, b: 0.7433963, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1885,8 +1885,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -97.05129}
-  m_SizeDelta: {x: 71.1584, y: 50}
+  m_AnchoredPosition: {x: 50, y: -80.67629}
+  m_SizeDelta: {x: 111.9084, y: 82.75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1326195965
 MonoBehaviour:
@@ -1908,7 +1908,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 99
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b7e1acf047cfaf4fafa8385629ca68a, type: 2}
   m_sharedMaterial: {fileID: 6536052198375006351, guid: 0b7e1acf047cfaf4fafa8385629ca68a, type: 2}
@@ -2359,8 +2359,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278239481
+  m_fontColor: {r: 0.9764706, g: 0.7529412, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
