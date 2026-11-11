@@ -55,7 +55,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] Sprite clubsSprite, heartsSprite, spadesSprite, diamondsSprite;
     [SerializeField] TweenMover barMover;
     [SerializeField] PopMover luckyNumMover, sumPop;
-    
+    [SerializeField] LossMenu lossMenu;
 
 
 
@@ -305,6 +305,19 @@ public class CardManager : MonoBehaviour
     }
 
 
+    async Task HandCardsDelete()
+    {
+        Tween tween = DOTween.Sequence();
+
+        foreach (Card c in handCards)
+        {
+           Vector2 knockDir = UnityEngine.Random.insideUnitCircle.normalized;
+           tween  = c.GetComponent<CardMover>().ApplyKnockback(0f, knockDir);
+        }
+        await tween.AsyncWaitForCompletion();
+    }
+
+
 
 
     async void PlayCardDeck()
@@ -396,7 +409,18 @@ public class CardManager : MonoBehaviour
 
             selectedCards.Clear();
             sumText.text = "0";
-            RefillHand();
+
+
+            if (luck == 0)
+            {
+                await HandCardsDelete();
+                lossMenu.gameObject.SetActive(true);
+                lossMenu.InitLossMenu();
+            }
+            else
+            {
+                RefillHand();
+            }
         }
         catch (Exception e)
         {

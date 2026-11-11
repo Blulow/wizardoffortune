@@ -96,7 +96,7 @@ public class TweenMover : MonoBehaviour
         RestoreFade();
     }
 
-    public Tween ApplyKnockback(float delay = 0f)
+    public Tween ApplyKnockback(float delay = 0f, Vector2 knockDirection = new Vector2())
     {
         if (this == null) return null;
 
@@ -104,6 +104,12 @@ public class TweenMover : MonoBehaviour
         tiltTween?.Kill();
         shakeTween?.Kill();
         knockTween?.Kill();
+
+        if (knockDirection != Vector2.zero)
+        {
+            knockDir = knockDirection;
+        }
+
 
         Vector3 hit = transform.position + (Vector3)(knockDir * knockDistance);
         Vector3 end = hit + Vector3.down * fallDistance;
