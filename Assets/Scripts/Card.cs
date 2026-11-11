@@ -23,6 +23,10 @@ public class Card : MonoBehaviour, IInteractable
     [SerializeField] SpriteRenderer flash;
 
     [SerializeField] Collider2D collider;
+
+    [SerializeField] GameObject goldSparkles;
+
+
     public CardMover Mover { get; private set; }
     void Awake() => Mover = GetComponent<CardMover>();
 
@@ -62,6 +66,7 @@ public class Card : MonoBehaviour, IInteractable
             GetComponent<CardMover>().frontSprite = goldenSprite;
             numberSprite.color = new Color32(150, 128, 89, 255);
             suitSprite.color = new Color32(150, 128, 89, 255);
+            goldSparkles.SetActive(true);
         }
         Debug.Log(numberSprite.sprite + " " + number);
     }
@@ -121,9 +126,10 @@ public class Card : MonoBehaviour, IInteractable
     }
 
 
-    public TweenMover ShowNumber(int number)
+    public TweenMover ShowNumber(int number, Color color)
     {
         PopMover mover = Instantiate(numberShow, feedbackSpawnPoint.position, Quaternion.identity);
+        mover.GetComponent<TextMeshPro>().color = color;
         if (mover != null) mover.PlayPop(0f,number.ToString());
         else Debug.LogWarning("numberShow prefab has no TextPopReveal on its label", numberShow);
 

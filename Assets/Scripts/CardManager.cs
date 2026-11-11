@@ -85,6 +85,9 @@ public class CardManager : MonoBehaviour
     List<CardData> straightPool = new List<CardData>();
     List<CardData> flushPool = new List<CardData>();
 
+    [SerializeField] Color failColor, successColor;
+
+
     bool isPlaying;
 
 
@@ -329,7 +332,7 @@ public class CardManager : MonoBehaviour
             {
                 addLuck = true;
                 combNum = luckyNumber;
-                mergeFeedback = c => c.ShowNumber(c.number);
+                mergeFeedback = c => c.ShowNumber(c.number, successColor);
                 failStreak = 0;
             }
 
@@ -357,7 +360,7 @@ public class CardManager : MonoBehaviour
             {
                 reduceLuck = true;
                 int penaltyPerCard = GetPenalty();
-                mergeFeedback = c => c.ShowNumber(-penaltyPerCard);
+                mergeFeedback = c => c.ShowNumber(-penaltyPerCard, failColor);
                 combNum = -penaltyPerCard * cardsToPlay.Count;
                 failStreak++;
             }
@@ -466,6 +469,7 @@ public class CardManager : MonoBehaviour
     async Task PopOutcome(int outCome)
     {
         sumOut.gameObject.SetActive(true);
+        sumOut.GetComponent<TextMeshPro>().color = outCome > 0 ? successColor : failColor;
         Tween tweenMove = sumOut.PlayPop(0f, outCome.ToString());
         await tweenMove.AsyncWaitForCompletion();
     }

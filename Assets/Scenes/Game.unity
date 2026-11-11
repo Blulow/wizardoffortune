@@ -1481,6 +1481,7 @@ MonoBehaviour:
   diamondsSprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
   barMover: {fileID: 295555892}
   luckyNumMover: {fileID: 1920268600}
+  sumPop: {fileID: 1326195967}
   baseLuck: 50
   maxLuck: 100
   reward: 5
@@ -1493,6 +1494,8 @@ MonoBehaviour:
   goldenChanceText: {fileID: 1766504814}
   sumText: {fileID: 1326195965}
   luckbarImage: {fileID: 332037000}
+  failColor: {r: 1, g: 0.3764706, b: 0.3764706, a: 1}
+  successColor: {r: 0.21960786, g: 0.5176471, b: 0.18039216, a: 1}
 --- !u!1 &876045488
 GameObject:
   m_ObjectHideFlags: 0
@@ -2623,7 +2626,7 @@ MonoBehaviour:
   m_text: -2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0b7e1acf047cfaf4fafa8385629ca68a, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 6536052198375006351, guid: 0b7e1acf047cfaf4fafa8385629ca68a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2692,7 +2695,7 @@ MonoBehaviour:
   _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_renderer: {fileID: 1538893941}
   m_maskType: 0
 --- !u!23 &1538893941
@@ -2720,7 +2723,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 6536052198375006351, guid: 0b7e1acf047cfaf4fafa8385629ca68a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3528,8 +3531,8 @@ MonoBehaviour:
   popTargets: []
   label: {fileID: 1920268598}
   popStagger: 0.06
-  popDuration: 0.2
-  popOvershoot: 8
+  popDuration: 0.3
+  popOvershoot: 12
 --- !u!1 &1966552721
 GameObject:
   m_ObjectHideFlags: 0
