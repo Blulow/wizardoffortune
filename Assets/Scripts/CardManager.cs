@@ -54,7 +54,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] Transform cloverSpawn, cloverBarPos, barPos;
     [SerializeField] Sprite clubsSprite, heartsSprite, spadesSprite, diamondsSprite;
     [SerializeField] TweenMover barMover;
-    [SerializeField] PopMover luckyNumMover;
+    [SerializeField] PopMover luckyNumMover, sumPop;
     
 
 
@@ -220,7 +220,7 @@ public class CardManager : MonoBehaviour
 
         int sum = 0;
         foreach (Card card in selectedCards) sum += card.number;
-        sumText.text = sum.ToString();
+        sumPop.PlayPop(0f, sum.ToString());
     }
 
     void LayoutHand(int firstNewIndex = int.MaxValue)
@@ -330,7 +330,6 @@ public class CardManager : MonoBehaviour
                 addLuck = true;
                 combNum = luckyNumber;
                 mergeFeedback = c => c.ShowNumber(c.number);
-               
                 failStreak = 0;
             }
 
@@ -348,8 +347,7 @@ public class CardManager : MonoBehaviour
             if (HasGolden(cardsToPlay) && combo.hasCombo && HasLuckyNumber(cardsToPlay))
             {
                 GenerateLuckyNumber(cardsToPlay, combo);
-                luckyNumMover.PlayPop(luckyNumber);
-
+                luckyNumMover.PlayPop(0f, luckyNumber.ToString());
             }
 
             await MoveCardsToPlay(cardsToPlay);
@@ -376,6 +374,8 @@ public class CardManager : MonoBehaviour
                 await DoDamage(combNum);
             }
 
+
+
             UpdateUI();
 
 
@@ -392,6 +392,7 @@ public class CardManager : MonoBehaviour
             }
 
             selectedCards.Clear();
+            sumText.text = "0";
             RefillHand();
         }
         catch (Exception e)

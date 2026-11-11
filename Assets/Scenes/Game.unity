@@ -2083,6 +2083,7 @@ GameObject:
   - component: {fileID: 1326195964}
   - component: {fileID: 1326195966}
   - component: {fileID: 1326195965}
+  - component: {fileID: 1326195967}
   m_Layer: 5
   m_Name: SumText
   m_TagString: Untagged
@@ -2209,6 +2210,39 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1326195963}
   m_CullTransparentMesh: 1
+--- !u!114 &1326195967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326195963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c2565d8819bea947ab5f40676c490b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopMover
+  slotMove:
+    duration: 0.35
+    ease: 27
+    overshoot: 1.7
+  tiltPerUnit: 3
+  maxTilt: 15
+  pinchTarget: {fileID: 0}
+  startScale: 0.6
+  pinchFraction: 0.6
+  shakeDuration: 0.3
+  knockDistance: 0.6
+  knockTime: 0.12
+  fallDistance: 3
+  fallTime: 0.5
+  knockSpin: 90
+  stopShort: 0.3
+  popTargets: []
+  label: {fileID: 1326195965}
+  popStagger: 0.06
+  popDuration: 0.2
+  popOvershoot: 4
 --- !u!1 &1495434556
 GameObject:
   m_ObjectHideFlags: 0
@@ -3495,7 +3529,7 @@ MonoBehaviour:
   label: {fileID: 1920268598}
   popStagger: 0.06
   popDuration: 0.2
-  popOvershoot: 4
+  popOvershoot: 8
 --- !u!1 &1966552721
 GameObject:
   m_ObjectHideFlags: 0
