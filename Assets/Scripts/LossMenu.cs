@@ -2,24 +2,26 @@ using DG.Tweening;
 using System.Threading.Tasks;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LossMenu : MonoBehaviour
 {
 
     [SerializeField] Button restartBtn, quitBtn;
-    [SerializeField] Image blkBaground;
+    [SerializeField] Image blkBaground, blackout;
     [SerializeField] TweenMover panel;
     [SerializeField] PlayerInteractor playerInteractor;
     [SerializeField] Transform offScreenPanPos, onScreenPanPos;
     void Start()
     {
         quitBtn.onClick.AddListener(QuitGame);
+        restartBtn.onClick.AddListener(Restart);
         gameObject.SetActive(false);
     }
 
     // Make it public so you can link it to a UI Button
-    public void QuitGame()
+    public static void QuitGame()
     {
         // Log a message to verify it works in the Unity Inspector
         Debug.Log("Quit game requested.");
@@ -33,6 +35,16 @@ public class LossMenu : MonoBehaviour
 #endif
     }
 
+
+    async void Restart()
+    {
+        Color color = Color.black;
+        color.a = 0f;
+        blackout.color = color;
+        blackout.gameObject.SetActive(true);
+        await blackout.DOFade(1f, 0.8f).AsyncWaitForCompletion();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
 
     async public void InitLossMenu()

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -93,17 +94,36 @@ public class CardManager : MonoBehaviour
 
     void Start()
     {
-        luck = baseLuck;
-
         playHandButton.onClick.AddListener(PlayCardDeck);
         playHandButton.interactable = false;
         playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
-        DrawHand();
+    }
+
+    private void OnEnable()
+    {
+        MainMenuManager.OnStartGame += StartGame;
+    }
+
+    private void OnDisable()
+    {
+        MainMenuManager.OnStartGame -= StartGame;
+    }
+
+
+
+    async void StartGame()
+    {
+        luck = baseLuck;
         GenerateLuckyNumber(new List<Card>());
         UpdateUI();
         sumText.text = "0";
         outSumOriginalPos = sumOut.transform.position;
+        await Task.Delay(1000);
+        DrawHand();
     }
+
+
+    
 
     void GenerateLuckyNumber(List<Card> cards, Combo combo = new Combo())
     {
