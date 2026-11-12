@@ -117,7 +117,7 @@ public class CardManager : MonoBehaviour
         {
             luck = baseLuck;
             GenerateLuckyNumber(new List<Card>());
-            UpdateUI();
+            UpdateUI(true);
             sumText.text = "0";
             outSumOriginalPos = sumOut.transform.position;
             await Delay(1f);                       // was Task.Delay(1000)
@@ -493,10 +493,19 @@ public class CardManager : MonoBehaviour
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
         int newLuckAmount = Mathf.Max(0, luck + reduceNum);
         SetValue(luckText, luck, newLuckAmount);
-        float target =  Mathf.Clamp01((float)newLuckAmount / (float)maxLuck);
-        luckbarImage.DOFillAmount(target, 0.6f)
-        .SetEase(Ease.OutCubic);
+
         luck = newLuckAmount;
+
+        float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
+        DOVirtual.Float(luckbarImage.GetComponent<RectTransform>().rect.height, height, 0.5f, (value) =>
+        {
+            luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, value);
+        }).SetEase(Ease.OutQuad);
+
+        Vector3 luckTextPos = luckText.GetComponent<RectTransform>().anchoredPosition;
+        luckTextPos.y = height - 684.0f;
+        luckText.GetComponent<RectTransform>().DOAnchorPos(luckTextPos, 0.5f);
+
         barMover.Shake(0f, 10f, 4f);
         await Waiter.Wait(sumOut.ApplyKnockback());
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
@@ -611,17 +620,21 @@ public class CardManager : MonoBehaviour
         c.Mover.SetSlot(GetSlotPosition(index), delay, 0, true,true);   // then slides to its slot
         c.SetRenderPriority(5 - index);
     }
-    async Task UpdateUI()
+    void UpdateUI(bool start = false)
     {
+
         luckyNumberText.text = luckyNumber.ToString();
         luckText.text = luck.ToString();
-        
-        float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
-        luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
 
-        Vector3 luckTextPos = luckText.GetComponent<RectTransform>().anchoredPosition;
-        luckTextPos.y = height - 684.0f;
-        luckText.GetComponent<RectTransform>().anchoredPosition = luckTextPos;
+        if (start)
+        {
+            float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
+            luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+
+            Vector3 luckTextPos = luckText.GetComponent<RectTransform>().anchoredPosition;
+            luckTextPos.y = height - 684.0f;
+            luckText.GetComponent<RectTransform>().anchoredPosition = luckTextPos;
+        }
 
         failPenaltyText.text = GetPenalty().ToString();
         goldenChanceText.text = $"{GetGoldenChance():F1}%";
@@ -682,11 +695,14 @@ public class CardManager : MonoBehaviour
             luckText.text = luck.ToString();
 
             float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
-            luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            DOVirtual.Float(luckbarImage.GetComponent<RectTransform>().rect.height, height, 0.5f, (value) =>
+            {
+                luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, value);
+            }).SetEase(Ease.OutQuad);
 
-            Vector3 luckTextPos = luckText.GetComponent<RectTransform>().position;
+            Vector3 luckTextPos = luckText.GetComponent<RectTransform>().anchoredPosition;
             luckTextPos.y = height - 684.0f;
-            luckText.GetComponent<RectTransform>().position = luckTextPos;
+            luckText.GetComponent<RectTransform>().DOAnchorPos(luckTextPos, 0.5f);
 
             barMover.Shake(0f, 0.3f, 1f);
             pop.gameObject.SetActive(false);
