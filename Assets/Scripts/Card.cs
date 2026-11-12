@@ -68,7 +68,6 @@ public class Card : MonoBehaviour, IInteractable
             suitSprite.color = new Color32(150, 128, 89, 255);
             goldSparkles.SetActive(true);
         }
-        Debug.Log(numberSprite.sprite + " " + number);
     }
 
 

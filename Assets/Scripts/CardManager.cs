@@ -577,11 +577,18 @@ public class CardManager : MonoBehaviour
         c.Mover.SetSlot(GetSlotPosition(index), delay, 0, true,true);   // then slides to its slot
         c.SetRenderPriority(5 - index);
     }
-    void UpdateUI()
+    async Task UpdateUI()
     {
         luckyNumberText.text = luckyNumber.ToString();
         luckText.text = luck.ToString();
-        luckbarImage.fillAmount = Mathf.Clamp01((float)luck / (float)maxLuck);
+        
+        float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
+        luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+
+        Vector3 luckTextPos = luckText.GetComponent<RectTransform>().anchoredPosition;
+        luckTextPos.y = height - 684.0f;
+        luckText.GetComponent<RectTransform>().anchoredPosition = luckTextPos;
+
         failPenaltyText.text = GetPenalty().ToString();
         goldenChanceText.text = $"{GetGoldenChance():F1}%";
     }
@@ -635,7 +642,14 @@ public class CardManager : MonoBehaviour
             await TweenMover.Wait(pop.MoveTo(cloverBarPos.position));
             luck = Mathf.Min(maxLuck, luck + 1);
             luckText.text = luck.ToString();
-            luckbarImage.fillAmount = Mathf.Clamp01((float)luck / (float)maxLuck);
+
+            float height = Mathf.Clamp01((float)luck / (float)maxLuck) * 684.0f;
+            luckbarImage.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+
+            Vector3 luckTextPos = luckText.GetComponent<RectTransform>().position;
+            luckTextPos.y = height - 684.0f;
+            luckText.GetComponent<RectTransform>().position = luckTextPos;
+
             barMover.Shake(0f, 0.3f, 1f);
             pop.gameObject.SetActive(false);
         }
