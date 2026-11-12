@@ -12,6 +12,14 @@ Shader "Custom/Shadow"
         _ShadowDistance("Distance", Range(0, 0.2)) = 0.03
         _ShadowBlur("Blur Radius", Range(0, 0.05)) = 0.01
         _ShadowSpread("Spread (Thickness)", Range(0, 1)) = 0.2
+
+        // Required Unity UI Properties (Prevents Console Warnings & Supports Masks)
+        [HideInInspector] _StencilComp("Stencil Comparison", Float) = 8
+        [HideInInspector] _Stencil("Stencil ID", Float) = 0
+        [HideInInspector] _StencilOp("Stencil Operation", Float) = 0
+        [HideInInspector] _StencilWriteMask("Stencil Write Mask", Float) = 255
+        [HideInInspector] _StencilReadMask("Stencil Read Mask", Float) = 255
+        [HideInInspector] _BaseColorMask("Color Mask", Float) = 15
     }
 
     SubShader
@@ -23,6 +31,15 @@ Shader "Custom/Shadow"
             "RenderType" = "Plane" 
             "CanUseSpriteAtlas" = "True"
             "RenderPipeline" = "UniversalPipeline"
+        }
+
+        Stencil
+        {
+            Ref [_Stencil]
+            Comp [_StencilComp]
+            Pass [_StencilOp]
+            ReadMask [_StencilReadMask]
+            WriteMask [_StencilWriteMask]
         }
 
         Cull Off
@@ -51,11 +68,12 @@ Shader "Custom/Shadow"
                 float4 positionCS   : SV_POSITION;
                 float4 color        : COLOR;
                 float2 uv           : TEXCOORD0;
-                float4 uvBounds     : TEXCOORD1;
+                float4 worldPos     : TEXCOORD1;
             };
 
             TEXTURE2D(_BaseMap);
             SAMPLER(sampler_BaseMap);
+            float4 _BaseMap_TexelSize;
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
@@ -66,9 +84,9 @@ Shader "Custom/Shadow"
                 float _ShadowDistance;
                 float _ShadowBlur;
                 float _ShadowSpread;
+                float4 _ClipRect;
             CBUFFER_END
 
-            // Safely sample texture while treating anything outside 0..1 as transparent
             half4 SampleSpriteSafe(float2 uv)
             {
                 if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
@@ -80,54 +98,32 @@ Shader "Custom/Shadow"
             Varyings vert(Attributes IN)
             {
                 Varyings output;
+                output.worldPos = IN.positionOS;
 
-                // 1. Calculate required UV padding from distance + blur
+                // 1. Calculate required UV padding
                 float uvPad = _ShadowDistance + _ShadowBlur;
                 float scaleFactor = 1.0 + (uvPad * 2.0);
 
-                // 2. Find the center of the sprite in Object Space using UVs
-                // Assuming Full Rect sprite where UVs go 0 -> 1
+                // 2. Expand UVs cleanly from the center (0.5, 0.5)
                 float2 uvOffsetFromCenter = IN.uv - 0.5;
-                
-                // Determine sprite world-unit size per UV unit
-                // (Works even if pivot is not centered)
-                float2 spriteSizeOS = float2(
-                    length(ddx(IN.positionOS.xy)), 
-                    length(ddy(IN.positionOS.xy))
-                );
-                
-                // Fallback/Exact calculation using texture dimensions & default 100 PPU:
-                // Better approach: Expand outward from vertex UV direction
-                float2 expandDir = sign(uvOffsetFromCenter);
-
-                // Calculate UV expansion
                 float2 expandedUV = 0.5 + (uvOffsetFromCenter * scaleFactor);
-
-                // Calculate corresponding Object Space expansion
-                // We derive the local scale ratio from the sprite's current vertex vs UV
-                float4 posOS = IN.positionOS;
-                
-                // Exact geometric expansion for Full Rect quads:
-                // Shift vertex outward proportional to UV expansion
                 float2 uvDelta = expandedUV - IN.uv;
-                
-                // Convert UV delta to Object Space using texture aspect ratio / texel size
-                // Note: Unity sprites map 1 pixel = 1 / PixelsPerUnit. 
-                // Since we don't have PPU directly, we infer local quad size from vertex positions:
-                float2 quadScale = abs(posOS.xy / max(abs(uvOffsetFromCenter), 0.0001));
-                posOS.xy += uvDelta * quadScale;
+
+                // 3. Expand UI vertices using the sprite's native pixel dimensions
+                // This avoids relying on pivot-dependent vertex positions
+                float4 posOS = IN.positionOS;
+                posOS.xy += uvDelta * _BaseMap_TexelSize.zw;
 
                 output.positionCS = TransformObjectToHClip(posOS.xyz);
                 output.uv = TRANSFORM_TEX(expandedUV, _BaseMap);
                 output.color = IN.color * _BaseColor;
-                output.uvBounds = float4(0.0, 0.0, 1.0, 1.0);
 
                 return output;
             }
 
             half4 frag(Varyings IN) : SV_Target
             {
-                // 1. Sample main sprite (returns transparent in the newly padded border area)
+                // 1. Sample main sprite
                 half4 mainColor = SampleSpriteSafe(IN.uv) * IN.color;
 
                 // 2. Calculate directional offset
