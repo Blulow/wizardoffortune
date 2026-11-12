@@ -442,8 +442,6 @@ MonoBehaviour:
   particles: {fileID: 796913256966646230}
   flash: {fileID: 5498952211782343109}
   collider: {fileID: 6955645890886092553}
-  failColor: {r: 1, g: 0.37647063, b: 0.37647063, a: 1}
-  successColor: {r: 0.21960786, g: 0.5176471, b: 0.18039216, a: 1}
   goldSparkles: {fileID: 1841179547697429277}
   isGold: 0
 --- !u!61 &6955645890886092553
@@ -513,7 +511,7 @@ MonoBehaviour:
   pinchTarget: {fileID: 1123703411821332251}
   startScale: 1
   pinchFraction: 0.6
-  shakeDuration: 0.3
+  shakeDuration: 0.2
   knockDistance: 0.6
   knockTime: 0.12
   fallDistance: 3

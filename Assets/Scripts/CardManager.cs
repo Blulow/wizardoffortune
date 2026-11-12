@@ -293,7 +293,7 @@ public class CardManager : MonoBehaviour
     {
         Tween tween = null;
         for (int i = 0; i < cards.Count; i++)
-            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.3f * i + 1f, 0f, true, true, false);
+            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.1f * i + 0.5f, 0f, true, true, false);
 
         if (tween != null) await Tw(tween);        // was tween.AsyncWaitForCompletion()
     }
@@ -306,7 +306,7 @@ public class CardManager : MonoBehaviour
     {
         if (cards.Count == 0) return;
 
-        await Delay(1f);
+        await Delay(0.5f);
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
         if (cards.Count > 1)
@@ -489,7 +489,7 @@ public class CardManager : MonoBehaviour
     async Task DoDamage(int reduceNum)
     {
         Vector3 vector3 = sumOut.transform.position;
-        await Waiter.Wait(sumOut.ReachKnockback(barPos.transform.position, 1f));
+        await Waiter.Wait(sumOut.ReachKnockback(barPos.transform.position, 0.5f));
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
         int newLuckAmount = Mathf.Max(0, luck + reduceNum);
         SetValue(luckText, luck, newLuckAmount);
@@ -521,7 +521,7 @@ public class CardManager : MonoBehaviour
     async Task MergeObject(List<TweenMover> tweenMovers, int outCome)
     {
         await Task.WhenAll(tweenMovers.Select(m =>
-            Waiter.Wait(m.ReachKnockback(sumOut.transform.position, 0.5f))));
+            Waiter.Wait(m.ReachKnockback(sumOut.transform.position))));
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
         var tasks = new List<Task>();
@@ -664,7 +664,7 @@ public class CardManager : MonoBehaviour
         await Task.WhenAll(tasks);
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
-        await Delay(0.5f);
+        await Delay(0.25f);
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
         foreach (PopMover pop in popMovers)
