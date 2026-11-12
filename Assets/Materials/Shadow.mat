@@ -38,7 +38,7 @@ Material:
     - _ShadowAlpha: 0.691
     - _ShadowAngle: 321
     - _ShadowBlur: 0
-    - _ShadowDistance: 0.018
+    - _ShadowDistance: 0.039
     - _ShadowSpread: 0
     - _Stencil: 0
     - _StencilComp: 8
