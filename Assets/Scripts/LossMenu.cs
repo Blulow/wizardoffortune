@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Threading.Tasks;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -38,21 +39,31 @@ public class LossMenu : MonoBehaviour
 
     async void Restart()
     {
-        Color color = Color.black;
-        color.a = 0f;
-        blackout.color = color;
-        blackout.gameObject.SetActive(true);
-        await blackout.DOFade(1f, 0.8f).AsyncWaitForCompletion();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        try
+        {
+            Color color = Color.black;
+            color.a = 0f;
+            blackout.color = color;
+            blackout.gameObject.SetActive(true);
+            await Waiter.Wait(blackout.DOFade(1f, 0.8f).SetLink(gameObject),
+                                  destroyCancellationToken);
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+        catch (OperationCanceledException) { }
     }
 
-
-    async public void InitLossMenu()
+    public async void InitLossMenu()
     {
-        panel.transform.position = offScreenPanPos.position;
-        playerInteractor.enabled = false;
-        await blkBaground.DOFade(0.95f, 0.2f).AsyncWaitForCompletion();
-        panel.MoveTo(onScreenPanPos.position);
+        try
+        {
+            panel.transform.position = offScreenPanPos.position;
+            playerInteractor.enabled = false;
+            await Waiter.Wait(blkBaground.DOFade(0.95f, 0.2f).SetLink(gameObject),
+                                  destroyCancellationToken);
+            panel.MoveTo(onScreenPanPos.position);
+        }
+        catch (OperationCanceledException) { }
     }
 
 

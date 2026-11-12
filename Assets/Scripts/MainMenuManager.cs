@@ -60,29 +60,37 @@ public class MainMenuManager : MonoBehaviour
     {
         if (isPlaying) return;
         isPlaying = true;
-        await card.Shake().AsyncWaitForCompletion();
-        await Task.Delay(500);
-        if (scale)
+        try
         {
-            card.transform.DOScale(cardEndSize, cardZoomDuration);
-            shadow.DOFade(shadowEndAlpha, cardZoomDuration);
-            shadow.transform.DOLocalMove(endShadowOffset, cardZoomDuration);
+            await Waiter.Wait(card.Shake(), destroyCancellationToken);   // null-safe
+            await Waiter.Seconds(0.5f, destroyCancellationToken);
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
+            if (scale)
+            {
+                card.transform.DOScale(cardEndSize, cardZoomDuration);
+                shadow.DOFade(shadowEndAlpha, cardZoomDuration);
+                shadow.transform.DOLocalMove(endShadowOffset, cardZoomDuration);
+            }
+            else
+            {
+                shadow.DOFade(shadowEndAlpha, cardZoomDuration);
+                //shadow.transform.DOLocalMove(endShadowOffset, cardZoomDuration);
+                camera.DOOrthoSize(cameraEndSize, cardZoomDuration);
+            }
+            hasPlayed = true;
+            await Task.Delay(1000);
+            if (!Application.isPlaying) return;   
+            deck.DOFade(1, cardZoomDuration + 0.2f);
+            gameCanvas.DOFade(1, cardZoomDuration + 0.2f);
+            clover.DOFade(1, cardZoomDuration + 0.2f);
+            mainMenuObjects.gameObject.SetActive(false);
+            OnStartGame?.Invoke();
+            await Waiter.Wait(card.transform.DOScale(Vector2.zero, cardZoomDuration), destroyCancellationToken);
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
+            card.transform.localScale = Vector3.one;
+            card.gameObject.SetActive(false);
         }
-        else
-        {
-            shadow.DOFade(shadowEndAlpha, cardZoomDuration);
-            //shadow.transform.DOLocalMove(endShadowOffset, cardZoomDuration);
-            camera.DOOrthoSize(cameraEndSize, cardZoomDuration);
-        }
-        hasPlayed = true;
-        await Task.Delay(1000);
-        deck.DOFade(1, cardZoomDuration + 0.2f);
-        gameCanvas.DOFade(1, cardZoomDuration + 0.2f);
-        clover.DOFade(1, cardZoomDuration + 0.2f);
-        mainMenuObjects.gameObject.SetActive(false);
-        OnStartGame?.Invoke();
-        await card.transform.DOScale(Vector2.zero, cardZoomDuration).AsyncWaitForCompletion();
-        card.transform.localScale = Vector3.one;
-        card.gameObject.SetActive(false);
+        catch (OperationCanceledException) { }
+
     }
 }
