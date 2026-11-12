@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] TweenMover card;
-    [SerializeField] SpriteRenderer shadow, deck, clover;
+    [SerializeField] SpriteRenderer shadow, deck, deckShadow, clover;
     [SerializeField] CanvasGroup gameCanvas;
     [SerializeField] Button startGameButton, quitGameButton;
     [SerializeField] Vector2 cardEndSize = new Vector2(5,5), endShadowOffset;
@@ -33,6 +33,7 @@ public class MainMenuManager : MonoBehaviour
             blackout.gameObject.SetActive(true);
             mainMenuObjects.gameObject.SetActive(false);
             deck.DOFade(1, 0.2f);
+            deckShadow.DOFade(1, 0.2f);
             gameCanvas.DOFade(1,0.2f);
             clover.DOFade(1,0.2f);
             Color color = Color.black;
@@ -77,6 +78,7 @@ public class MainMenuManager : MonoBehaviour
         hasPlayed = true;
         await Task.Delay(1000);
         deck.DOFade(1, cardZoomDuration + 0.2f);
+        deckShadow.DOFade(1, cardZoomDuration + 0.2f);
         gameCanvas.DOFade(1, cardZoomDuration + 0.2f);
         clover.DOFade(1, cardZoomDuration + 0.2f);
         mainMenuObjects.gameObject.SetActive(false);

@@ -11,7 +11,7 @@ public class Card : MonoBehaviour, IInteractable
 {
     public int id = 0;
 
-    [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite;
+    [SerializeField] SpriteRenderer cardSprite, numberSprite, suitSprite, shadowSprite;
     [SerializeField] Sprite goldenSprite;
 
     [SerializeField] PopMover numberShow;
@@ -176,6 +176,7 @@ public class Card : MonoBehaviour, IInteractable
         cardSprite.sortingOrder = r;
         numberSprite.sortingOrder = r + 2;
         suitSprite.sortingOrder = r + 2;
+        shadowSprite.sortingOrder = r + 3;
         particles.GetComponent<ParticleSystemRenderer>().sortingOrder = r + 1;
         flash.sortingOrder = r + 1;
         //Debug.Log(cardSprite.soe);
