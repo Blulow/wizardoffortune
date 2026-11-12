@@ -2278,7 +2278,7 @@ MonoBehaviour:
   baseLuck: 50
   maxLuck: 100
   reward: 5
-  basePenalty: 2
+  basePenalty: 1
   baseGoldChance: 10
   maxGoldChance: 30
   luckyNumberText: {fileID: 1920268598}
