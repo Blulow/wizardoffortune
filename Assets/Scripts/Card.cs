@@ -26,6 +26,8 @@ public class Card : MonoBehaviour, IInteractable
 
     [SerializeField] GameObject goldSparkles;
 
+    [SerializeField] List<Sprite> numberSprites, suitSprites;
+
 
     public CardMover Mover { get; private set; }
     void Awake() => Mover = GetComponent<CardMover>();
@@ -52,14 +54,13 @@ public class Card : MonoBehaviour, IInteractable
         OnPlayed?.Invoke();
     }
 
-
     public void InitCard(int _id = -1, bool _isGold = false)
     {
         number = ParseIdToNumber(_id > -1 ? _id : id);
         suit = ParseIdToSuit(_id > -1 ? _id : id);
         //cardText.text = number.ToString() + " of " + suit.ToString();
-        numberSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Numbers/card_number_{number}.png");
-        suitSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CardSprites/Suits/card_suit_{(int)suit + 1}.png");
+        numberSprite.sprite = numberSprites[number - 1];
+        suitSprite.sprite = suitSprites[(int)suit];
         if (isGold || _isGold)
         {
             //cardSprite.sprite = goldenSprite;
