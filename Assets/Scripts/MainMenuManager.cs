@@ -19,7 +19,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] Image blackout;
 
 
-    public static bool hasPlayed;
+    public static bool hasPlayed = false;
     public static event Action OnStartGame;
     bool isPlaying;
 
@@ -40,7 +40,7 @@ public class MainMenuManager : MonoBehaviour
             blackout.color = color;
             card.transform.localScale = Vector3.one;
             card.gameObject.SetActive(false);
-            OnStartGame?.Invoke();
+            OnStartGame?.Invoke(); 
             await blackout.DOFade(0f, 0.8f).AsyncWaitForCompletion();
         }
         else
@@ -48,6 +48,12 @@ public class MainMenuManager : MonoBehaviour
             blackout.gameObject.SetActive(false);
         }
 
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        hasPlayed = false;
     }
 
     async private void StartGame()
