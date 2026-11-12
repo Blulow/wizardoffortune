@@ -75,7 +75,7 @@ public class CardManager : MonoBehaviour
     [SerializeField] int baseLuck = 50;
     [SerializeField] int maxLuck = 100;
     [SerializeField] int reward = 5;
-    [SerializeField] int basePenalty = 2;
+    [SerializeField] int basePenalty = 1;
     [SerializeField] float baseGoldChance = 10;
     [SerializeField] float maxGoldChance = 30;
 
@@ -366,7 +366,6 @@ public class CardManager : MonoBehaviour
                 addLuck = true;
                 combNum = luckyNumber;
                 mergeFeedback = c => c.ShowNumber(c.number, successColor);
-                failStreak = 0;
             }
 
             // Combo
@@ -384,6 +383,7 @@ public class CardManager : MonoBehaviour
             {
                 GenerateLuckyNumber(cardsToPlay, combo);
                 luckyNumMover.PlayPop(0f, luckyNumber.ToString());
+                failStreak = 0;
             }
 
             await MoveCardsToPlay(cardsToPlay);
