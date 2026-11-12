@@ -513,7 +513,7 @@ MonoBehaviour:
   pinchTarget: {fileID: 1123703411821332251}
   startScale: 1
   pinchFraction: 0.6
-  shakeDuration: 0.3
+  shakeDuration: 0.2
   knockDistance: 0.6
   knockTime: 0.12
   fallDistance: 3

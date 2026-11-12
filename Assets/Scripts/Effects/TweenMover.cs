@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
@@ -234,8 +235,5 @@ public class TweenMover : MonoBehaviour
     // ---------- Await helper ----------
 
     // Safe on null or already-finished tweens
-    public static async Task Wait(Tween t)
-    {
-        if (t != null && t.IsActive()) await t.AsyncWaitForCompletion();
-    }
+
 }

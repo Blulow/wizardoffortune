@@ -113,17 +113,35 @@ public class CardManager : MonoBehaviour
 
     async void StartGame()
     {
-        luck = baseLuck;
-        GenerateLuckyNumber(new List<Card>());
-        UpdateUI();
-        sumText.text = "0";
-        outSumOriginalPos = sumOut.transform.position;
-        await Task.Delay(1000);
-        DrawHand();
+        try
+        {
+            luck = baseLuck;
+            GenerateLuckyNumber(new List<Card>());
+            UpdateUI();
+            sumText.text = "0";
+            outSumOriginalPos = sumOut.transform.position;
+            await Delay(1f);                       // was Task.Delay(1000)
+            DrawHand();
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    Task Delay(float seconds) =>
+    Task.Delay(TimeSpan.FromSeconds(seconds), destroyCancellationToken);
+
+    async Task Tw(Tween t)
+    {
+        await t.AsyncWaitForCompletion();
+        destroyCancellationToken.ThrowIfCancellationRequested();
+    }
+
+    void ThrowIfStopped()
+    {
+        destroyCancellationToken.ThrowIfCancellationRequested();
     }
 
 
-    
+
 
     void GenerateLuckyNumber(List<Card> cards, Combo combo = new Combo())
     {
@@ -274,13 +292,10 @@ public class CardManager : MonoBehaviour
     async Task GetRidOfPlayedCards(List<Card> cards)
     {
         Tween tween = null;
-        for (int i  = 0; i < cards.Count; i++) 
-        {
-            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.3f * i + 1f, 0f, true, true, false);
+        for (int i = 0; i < cards.Count; i++)
+            tween = cards[i].Mover.SetSlot(offScreenTarget.position, 0.1f * i + 0.5f, 0f, true, true, false);
 
-        }
-        await tween.AsyncWaitForCompletion();
-
+        if (tween != null) await Tw(tween);        // was tween.AsyncWaitForCompletion()
     }
 
     async Task ShakeCards(
@@ -291,7 +306,8 @@ public class CardManager : MonoBehaviour
     {
         if (cards.Count == 0) return;
 
-        await Task.Delay(TimeSpan.FromSeconds(1f));
+        await Delay(0.5f);
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
         if (cards.Count > 1)
         {
@@ -306,11 +322,15 @@ public class CardManager : MonoBehaviour
                     if (popup != null) popups.Add(popup);
                 }
 
-                await TweenMover.Wait(c.Mover.Shake());
+                await Waiter.Wait(c.Mover.Shake());
+                if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
             }
             if (outCome != 0)
             {
                 await MergeObject(popups, outCome);
+                if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
             }
         }
         else
@@ -319,7 +339,8 @@ public class CardManager : MonoBehaviour
             Card card = cards[0];
             foreach (var feedback in feedbacks) feedback(card);
             var pop = PopOutcome(outCome);
-            await TweenMover.Wait(card.Mover.Shake());
+            await Waiter.Wait(card.Mover.Shake());
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
             await pop;
         }
     }
@@ -327,14 +348,13 @@ public class CardManager : MonoBehaviour
 
     async Task HandCardsDelete()
     {
-        Tween tween = DOTween.Sequence();
-
+        Tween tween = null;
         foreach (Card c in handCards)
         {
-           Vector2 knockDir = UnityEngine.Random.insideUnitCircle.normalized;
-           tween  = c.GetComponent<CardMover>().ApplyKnockback(0f, knockDir);
+            Vector2 knockDir = UnityEngine.Random.insideUnitCircle.normalized;
+            tween = c.GetComponent<CardMover>().ApplyKnockback(0f, knockDir);
         }
-        await tween.AsyncWaitForCompletion();
+        if (tween != null) await Tw(tween);        // was tween.AsyncWaitForCompletion()
     }
 
 
@@ -387,6 +407,8 @@ public class CardManager : MonoBehaviour
             }
 
             await MoveCardsToPlay(cardsToPlay);
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
 
             // Penalty
             if (CentralMechanics.GetCardSum(cardsToPlay) != luckyNumber && !combo.hasCombo)
@@ -400,14 +422,21 @@ public class CardManager : MonoBehaviour
 
 
             await ShakeCards(cardsToPlay, feedbacks, mergeFeedback, combNum);
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
 
             if (addLuck)
             {
                 await SpawnClovers(reward);
+                if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
+
             }
             else if (reduceLuck)
             {
                 await DoDamage(combNum);
+                if (!Application.isPlaying) return;   // never touch the scene in edit mode
+
             }
 
 
@@ -416,7 +445,7 @@ public class CardManager : MonoBehaviour
 
 
             await GetRidOfPlayedCards(cardsToPlay);
-
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
             foreach (Card card in cardsToPlay)
             {
                 if (card != null)
@@ -434,6 +463,7 @@ public class CardManager : MonoBehaviour
             if (luck == 0)
             {
                 await HandCardsDelete();
+                if (!Application.isPlaying) return;   // never touch the scene in edit mode
                 lossMenu.gameObject.SetActive(true);
                 lossMenu.InitLossMenu();
             }
@@ -442,11 +472,12 @@ public class CardManager : MonoBehaviour
                 RefillHand();
             }
         }
+        catch (OperationCanceledException) { }
         catch (Exception e)
         {
             Debug.LogException(e);   // async void would otherwise hide this
         }
-        finally
+        if (!destroyCancellationToken.IsCancellationRequested)
         {
             isPlaying = false;
             playHandButton.interactable = selectedCards.Count > 0;
@@ -458,7 +489,8 @@ public class CardManager : MonoBehaviour
     async Task DoDamage(int reduceNum)
     {
         Vector3 vector3 = sumOut.transform.position;
-        await TweenMover.Wait(sumOut.ReachKnockback(barPos.transform.position, 1f));
+        await Waiter.Wait(sumOut.ReachKnockback(barPos.transform.position, 0.5f));
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
         int newLuckAmount = Mathf.Max(0, luck + reduceNum);
         SetValue(luckText, luck, newLuckAmount);
         float target =  Mathf.Clamp01((float)newLuckAmount / (float)maxLuck);
@@ -466,7 +498,8 @@ public class CardManager : MonoBehaviour
         .SetEase(Ease.OutCubic);
         luck = newLuckAmount;
         barMover.Shake(0f, 10f, 4f);
-        await TweenMover.Wait(sumOut.ApplyKnockback());
+        await Waiter.Wait(sumOut.ApplyKnockback());
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
         sumOut.transform.position = vector3;
         sumOut.gameObject.SetActive(false);
 
@@ -488,20 +521,21 @@ public class CardManager : MonoBehaviour
     async Task MergeObject(List<TweenMover> tweenMovers, int outCome)
     {
         await Task.WhenAll(tweenMovers.Select(m =>
-            TweenMover.Wait(m.ReachKnockback(sumOut.transform.position, 0.5f))));
+            Waiter.Wait(m.ReachKnockback(sumOut.transform.position))));
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
         var tasks = new List<Task>();
 
         if (tweenMovers.Count > 1)
         {
             foreach (TweenMover m in tweenMovers)
-                tasks.Add(TweenMover.Wait(m.ApplyKnockback()));
+                tasks.Add(Waiter.Wait(m.ApplyKnockback()));
 
         }
         else
         {
             foreach (TweenMover m in tweenMovers)
-                tasks.Add(TweenMover.Wait(m.PlayFade(0f, 0.3f)));
+                tasks.Add(Waiter.Wait(m.PlayFade(0f, 0.3f)));
         }
         tasks.Add(PopOutcome(outCome));  
 
@@ -515,9 +549,8 @@ public class CardManager : MonoBehaviour
         sumOut.gameObject.SetActive(true);
         sumOut.GetComponent<TextMeshPro>().color = outCome > 0 ? successColor : failColor;
         Tween tweenMove = sumOut.PlayPop(0f, outCome.ToString());
-        await tweenMove.AsyncWaitForCompletion();
+        await Tw(tweenMove);                       // was tweenMove.AsyncWaitForCompletion()
     }
-
 
 
     int GetPenalty()
@@ -573,6 +606,7 @@ public class CardManager : MonoBehaviour
 
     void AssignPos(Card c, int index, float delay = 0f)
     {
+        if (c == null || c.Mover == null) return;
         c.transform.position = deckSpawnPoint;                 // everything starts at one spot
         c.Mover.SetSlot(GetSlotPosition(index), delay, 0, true,true);   // then slides to its slot
         c.SetRenderPriority(5 - index);
@@ -604,12 +638,13 @@ public class CardManager : MonoBehaviour
                 Vector3 pos = playMidTargetPos.position + placementOffset * (j - k * 0.5f);
                 newest = cards[j].Mover.SetSlot(pos, 0f, 0f);
             }
-            if (newest != null) await TweenMover.Wait(newest);
+            if (newest != null) await Waiter.Wait(newest);
         }
     }
 
     async Task SpawnClovers(int cloverNum)
     {
+        ThrowIfStopped();                       
         int toSpawn = cloverNum - cloversSpawned.Count;
         for (int i = 0; i < toSpawn; i++)
         {
@@ -629,17 +664,20 @@ public class CardManager : MonoBehaviour
             c.gameObject.SetActive(false);
             c.transform.position = sumOut.transform.position;
             c.gameObject.SetActive(true);
-            tasks.Add(TweenMover.Wait(c.PlayPop(i * 0.1f)));
-            tasks.Add(TweenMover.Wait(c.MoveTo(cloverSpawn.position, i*0.1f)));
+            tasks.Add(Waiter.Wait(c.PlayPop(i * 0.1f)));
+            tasks.Add(Waiter.Wait(c.MoveTo(cloverSpawn.position, i*0.1f)));
         }
 
         await Task.WhenAll(tasks);
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
-        await Task.Delay(500);
+        await Delay(0.25f);
+        if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
-        foreach(PopMover pop in popMovers)
+        foreach (PopMover pop in popMovers)
         {
-            await TweenMover.Wait(pop.MoveTo(cloverBarPos.position));
+            await Waiter.Wait(pop.MoveTo(cloverBarPos.position));
+            if (!Application.isPlaying) return;   // never touch the scene in edit mode
             luck = Mathf.Min(maxLuck, luck + 1);
             luckText.text = luck.ToString();
 
