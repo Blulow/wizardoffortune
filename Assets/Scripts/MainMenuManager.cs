@@ -15,6 +15,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] bool scale;
     [SerializeField] Camera camera;
     [SerializeField] Transform mainMenuObjects;
+    [SerializeField] MusicManager musicManager;
 
 
     public static bool hasPlayed = false;
@@ -43,10 +44,11 @@ public class MainMenuManager : MonoBehaviour
             deck.DOFade(1, 0.2f);
             deckShadow.DOFade(1, 0.2f);
             deckOverlayShadow.DOFade(1, 0.2f);
-            gameCanvas.DOFade(1,0.2f);
+            gameCanvas.DOFade(1, 0.2f);
             gameCanvas.blocksRaycasts = true;
+            StartCoroutine(musicManager.SwitchMusic(1, 0, 1.0f));
 
-            clover.DOFade(1,0.2f);
+            clover.DOFade(1, 0.2f);
             //card.transform.localScale = Vector3.one;
             OnStartGame?.Invoke();
             await Waiter.Seconds(0.5f, destroyCancellationToken);
@@ -56,10 +58,15 @@ public class MainMenuManager : MonoBehaviour
 
             await Waiter.Wait(card.transform.DOScale(Vector2.zero, cardZoomDuration), destroyCancellationToken);
         }
+        else
+        {
+            StartCoroutine(musicManager.SwitchMusic(0, 0, 0));
+        }
     }
 
     void QuitGame()
     {
+        StartCoroutine(musicManager.SwitchMusic(2, cardZoomDuration, 0));
         LossMenu.QuitGame(card.transform, cardZoomDuration, cardEndSize, shadowOffset, shadow.transform, gameObject, this);
 
     }
@@ -104,6 +111,7 @@ public class MainMenuManager : MonoBehaviour
             mainMenuObjects.gameObject.SetActive(false);
             OnStartGame?.Invoke();
             shadow.transform.DOLocalMove(shadowOffset, cardZoomDuration);
+            StartCoroutine(musicManager.SwitchMusic(1, 0.2f, 1.0f));
             await Waiter.Wait(card.transform.DOScale(Vector3.zero, cardZoomDuration), destroyCancellationToken);
             if (!Application.isPlaying) return;   // never touch the scene in edit mode
             card.transform.localScale = Vector3.one;

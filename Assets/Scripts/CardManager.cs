@@ -81,7 +81,7 @@ public class CardManager : MonoBehaviour
     List<CardData> flushPool = new List<CardData>();
 
     [SerializeField] Color failColor, successColor;
-
+    [SerializeField] MusicManager musicManager;
 
     bool isPlaying;
 
@@ -470,6 +470,7 @@ public class CardManager : MonoBehaviour
                 if (!Application.isPlaying) return;   // never touch the scene in edit mode
                 lossMenu.gameObject.SetActive(true);
                 lossMenu.InitLossMenu();
+                StartCoroutine(musicManager.SwitchMusic(2, 0.2f, 0.2f));
             }
             else
             {

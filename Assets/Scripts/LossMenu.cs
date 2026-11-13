@@ -15,6 +15,7 @@ public class LossMenu : MonoBehaviour
     [SerializeField] Transform offScreenPanPos, onScreenPanPos;
     [SerializeField] float cardZoomDuration = 1.5f;
     [SerializeField] Vector2 cardEndSize, shadowOffset;
+    [SerializeField] MusicManager musicManager;
 
     Vector2 initOffset;
 
@@ -31,6 +32,7 @@ public class LossMenu : MonoBehaviour
 
     void CallQuit()
     {
+        StartCoroutine(musicManager.SwitchMusic(2, cardZoomDuration, 0));
         QuitGame(card, cardZoomDuration, cardEndSize, shadowOffset,shadow,gameObject, this);
     }
 
