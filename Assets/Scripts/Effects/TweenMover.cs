@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DG.Tweening;
@@ -188,7 +189,7 @@ public class TweenMover : MonoBehaviour
 
     // ---------- Intro (scale-in + optional pinch) ----------
 
-    public Tween PlayIntro(float delay = 0f, bool pinch = false, Action onMid = null)
+    public Tween PlayIntro(float delay = 0f, bool pinch = false, List<Action> onMid = null)
     {
         // Start state, applied immediately so the object waits small until its turn
         if (this == null) return null;
@@ -208,7 +209,13 @@ public class TweenMover : MonoBehaviour
             float dur = slotMove.duration * pinchFraction;
             pinchTween = DOTween.Sequence().SetDelay(delay).SetLink(gameObject);
             pinchTween.Append(pinchTarget.DOScaleX(0f, dur * 0.5f).SetEase(Ease.InQuad));
-            if (onMid != null) pinchTween.AppendCallback(() => onMid());
+            if (onMid != null) 
+            {
+                foreach(Action action in onMid)
+                {
+                    pinchTween.AppendCallback(() => action());
+                }
+            }             
             pinchTween.Append(pinchTarget.DOScaleX(pinchBaseScale.x, dur * 0.5f).SetEase(Ease.OutQuad));
         }
 
