@@ -188,7 +188,7 @@ public class ManualManager : MonoBehaviour
             .SetLink(backdrop.gameObject);
     }
 
-    async void ToggleManual()
+    public async void ToggleManual()
     {
         isShowingManual = !isShowingManual;
         int myToggle = ++toggleId;
@@ -234,7 +234,7 @@ public class ManualManager : MonoBehaviour
     private void Update()
     {
 
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
         {
             ToggleManual();
         }
