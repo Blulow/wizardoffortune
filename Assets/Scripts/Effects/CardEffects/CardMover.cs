@@ -1,4 +1,7 @@
 using DG.Tweening;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -12,7 +15,7 @@ public class MoveSettings
 public class CardMover : TweenMover
 {
     [Header("Card sprites")]
-    [SerializeField] SpriteRenderer face;
+    [SerializeField] SpriteRenderer face, suit, number, shadowSprite;
     [SerializeField] Sprite backSprite;
     [SerializeField] public Sprite frontSprite;
 
@@ -29,10 +32,18 @@ public class CardMover : TweenMover
             Sprite first  = faceTop ? backSprite  : frontSprite;
             Sprite second = faceTop ? frontSprite : backSprite;
 
+
             if (flip) face.sprite = first;
-            PlayIntro(delay, flip, flip ? () => face.sprite = second : null);
+            var onMid = new List<Action>();
+            if (flip) onMid.Add(() => face.sprite = second);
+            onMid.Add(() => suit.gameObject.SetActive(faceTop));
+            onMid.Add(() => number.gameObject.SetActive(faceTop));
+            onMid.Add(() => number.gameObject.SetActive(faceTop));
+            PlayIntro(delay, flip, onMid);
         }
 
         return move;
     }
+    
+
 }
