@@ -1,15 +1,15 @@
 fileFormatVersion: 2
-guid: 6dc9c21aa65726e4ca3f75052dd5b2dc
+guid: 34362101ae1d00048a3c2ced4ddf4203
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5754243698954085324
-    second: button_base_0
+      213: 4011876368709253794
+    second: manual_paper_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -55,11 +55,11 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   spriteTessellationMethod: 0
   spriteTessellationDetail: -1
   spriteGeometrySubdivision: -1
-  textureType: 0
+  textureType: 8
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -115,23 +115,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: button_base_0
+      name: manual_paper_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 686
-        height: 126
+        width: 806
+        height: 998
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 20, y: 46, z: 25, w: 41}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 43cdfc4d7d1d420b0800000000000000
-      internalID: -5754243698954085324
+      spriteID: 2aaf2bf2d4c0da730800000000000000
+      internalID: 4011876368709253794
       vertices: []
       indices: 
       edges: []
@@ -140,7 +140,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: d1088d428901f7144829ac0c770d65cd
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      button_base_0: -5754243698954085324
+      manual_paper_0: 4011876368709253794
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
