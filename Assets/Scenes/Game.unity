@@ -16428,7 +16428,7 @@ MonoBehaviour:
   cardZoomDuration: 1.5
   cardEndSize: {x: 6, y: 6}
   shadowOffset: {x: 500, y: -10}
-  musicManager: {fileID: 0}
+  musicManager: {fileID: 1539495022}
 --- !u!1 &1763632948
 GameObject:
   m_ObjectHideFlags: 0
