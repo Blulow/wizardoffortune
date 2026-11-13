@@ -6,12 +6,18 @@ using UnityEngine.UI;
 public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField] Vector2 offset = Vector2.zero;
+    [SerializeField] AudioClip clip;
 
     bool isOn = false;
 
     public void OnPointerDown(PointerEventData eventData)
     {
         OffsetOn();
+    }
+
+    void PlayAudio()
+    {
+        AudioManager.Play(clip, AudioChannel.Sfx);
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -49,5 +55,9 @@ public class OffsetContentOnClick : MonoBehaviour, IPointerDownHandler, IPointer
         }
         
         isOn = false;
+    }
+    private void OnEnable()
+    {
+        GetComponent<Button>().onClick.AddListener(PlayAudio);
     }
 }

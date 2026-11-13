@@ -49,7 +49,9 @@ public class CardManager : MonoBehaviour
     [SerializeField] TweenMover barMover;
     [SerializeField] PopMover luckyNumMover, sumPop;
     [SerializeField] LossMenu lossMenu;
-
+    [SerializeField]
+    AudioClip placeCardClip, drawCardClip, luckGainClip, luckLossClip, shakeClip, numbersCombineClip,
+        cardOutClip;
 
 
     List<PopMover> cloversSpawned = new List<PopMover>();
@@ -90,6 +92,7 @@ public class CardManager : MonoBehaviour
         playHandButton.interactable = false;
         playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
     }
+
 
     private void OnEnable()
     {
@@ -158,6 +161,7 @@ public class CardManager : MonoBehaviour
         {
             Card spawned = SpawnCard().GetComponent<Card>();
             AssignPos(spawned, i, i * staggerDelay);
+            AudioManager.Play(drawCardClip, AudioChannel.Sfx, true,i * staggerDelay);
         }
     }
 
@@ -248,6 +252,7 @@ public class CardManager : MonoBehaviour
         {
             selectedCards.Add(c);
         }
+        AudioManager.Play(cardOutClip, AudioChannel.Sfx);
         playHandButton.interactable = selectedCards.Count > 0;
         playHandButton.GetComponent<OffsetContentOnClick>().SetOffsetOnOff(!playHandButton.interactable);
 
@@ -261,6 +266,7 @@ public class CardManager : MonoBehaviour
         for (int i = 0; i < handCards.Count; i++)
         {
             float delay = i >= firstNewIndex ? (i - firstNewIndex) * staggerDelay : 0f;
+            AudioManager.Play(drawCardClip, AudioChannel.Sfx, true, delay);
             handCards[i].Mover.SetSlot(GetSlotPosition(i), delay, 0 ,true, i >= firstNewIndex);
             handCards[i].SetRenderPriority(5 - i);
         }
@@ -313,7 +319,7 @@ public class CardManager : MonoBehaviour
                     TweenMover popup = mergeFeedback(c);
                     if (popup != null) popups.Add(popup);
                 }
-
+                AudioManager.Play(shakeClip, AudioChannel.Sfx, true);
                 await Waiter.Wait(c.Mover.Shake());
                 if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
@@ -327,6 +333,7 @@ public class CardManager : MonoBehaviour
         }
         else
         {
+            AudioManager.Play(shakeClip, AudioChannel.Sfx);
             Debug.Log("Outcome: " + outCome);
             Card card = cards[0];
             foreach (var feedback in feedbacks) feedback(card);
@@ -356,12 +363,17 @@ public class CardManager : MonoBehaviour
     {
        
         if (isPlaying) return;
+
         isPlaying = true;
         playHandButton.interactable = false;
         playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
 
         try
         {
+            foreach (Card c in handCards)
+            {
+                c.SetColl(false);
+            }
             bool reduceLuck = false;
             bool addLuck = false;
             int combNum = 0;
@@ -463,6 +475,11 @@ public class CardManager : MonoBehaviour
             {
                 RefillHand();
             }
+
+            foreach (Card c in handCards)
+            {
+                c.SetColl(true);
+            }
         }
         catch (OperationCanceledException) { }
         catch (Exception e)
@@ -483,6 +500,7 @@ public class CardManager : MonoBehaviour
         Vector3 vector3 = sumOut.transform.position;
         await Waiter.Wait(sumOut.ReachKnockback(barPos.transform.position, 0.5f));
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
+        AudioManager.Play(luckLossClip, AudioChannel.Sfx);
         int newLuckAmount = Mathf.Max(0, luck + reduceNum);
         SetValue(luckText, luck, newLuckAmount);
 
@@ -521,6 +539,7 @@ public class CardManager : MonoBehaviour
 
     async Task MergeObject(List<TweenMover> tweenMovers, int outCome)
     {
+        
         await Task.WhenAll(tweenMovers.Select(m =>
             Waiter.Wait(m.ReachKnockback(sumOut.transform.position))));
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
@@ -529,6 +548,7 @@ public class CardManager : MonoBehaviour
 
         if (tweenMovers.Count > 1)
         {
+            AudioManager.Play(numbersCombineClip, AudioChannel.Sfx);
             foreach (TweenMover m in tweenMovers)
                 tasks.Add(Waiter.Wait(m.ApplyKnockback()));
 
@@ -642,6 +662,7 @@ public class CardManager : MonoBehaviour
                 if (cards[j] == null) continue;
                 Vector3 pos = playMidTargetPos.position + placementOffset * (j - k * 0.5f);
                 newest = cards[j].Mover.SetSlot(pos, 0f, 0f);
+                AudioManager.Play(placeCardClip, AudioChannel.Sfx, true);
             }
             if (newest != null) await Waiter.Wait(newest);
         }
@@ -679,8 +700,13 @@ public class CardManager : MonoBehaviour
         await Delay(0.25f);
         if (!Application.isPlaying) return;   // never touch the scene in edit mode
 
+        int index = 0;
+
         foreach (PopMover pop in popMovers)
         {
+
+            AudioManager.Play(luckGainClip, AudioChannel.Sfx, false,(luckGainClip.length * 0.2f)* index);
+            index++;
             await Waiter.Wait(pop.MoveTo(cloverBarPos.position));
             if (!Application.isPlaying) return;   // never touch the scene in edit mode
             luck = Mathf.Min(maxLuck, luck + 1);

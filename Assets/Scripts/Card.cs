@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEditor.SettingsManagement;
 
 
 public class Card : MonoBehaviour, IInteractable
@@ -49,9 +50,13 @@ public class Card : MonoBehaviour, IInteractable
 
     public void CardPlayed()
     {
-
-        collider.enabled = false;
+        SetColl(false);
         OnPlayed?.Invoke();
+    }
+
+    public void SetColl(bool turnOff)
+    {
+        collider.enabled = turnOff;
     }
 
     public void InitCard(int _id = -1, bool _isGold = false)

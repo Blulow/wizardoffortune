@@ -334,6 +334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -0.1}
+  clip: {fileID: 0}
 --- !u!1 &81817617
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,7 +776,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &203956032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1478,6 +1479,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -15}
+  clip: {fileID: 0}
 --- !u!114 &373689037
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3191,6 +3193,13 @@ MonoBehaviour:
   luckyNumMover: {fileID: 1920268600}
   sumPop: {fileID: 1326195967}
   lossMenu: {fileID: 1753989094}
+  placeCardClip: {fileID: 0}
+  drawCardClip: {fileID: 0}
+  luckGainClip: {fileID: 0}
+  luckLossClip: {fileID: 0}
+  shakeClip: {fileID: 0}
+  numbersCombineClip: {fileID: 0}
+  cardOutClip: {fileID: 0}
   baseLuck: 50
   maxLuck: 100
   reward: 5
@@ -3982,6 +3991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -5}
+  clip: {fileID: 0}
 --- !u!1 &1163666497
 GameObject:
   m_ObjectHideFlags: 0
@@ -4586,6 +4596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -5}
+  clip: {fileID: 0}
 --- !u!1 &1260767015
 GameObject:
   m_ObjectHideFlags: 0
@@ -4824,10 +4835,21 @@ MonoBehaviour:
   manuals:
   - {fileID: 116394657}
   - {fileID: 1707303955}
+  moveDur: 0
   nextButton: {fileID: 398034390}
   prevButton: {fileID: 1824649786}
   closeButton: {fileID: 615670268}
   pagesText: {fileID: 1141041552}
+  leftSide: {fileID: 0}
+  rightSide: {fileID: 0}
+  middle: {fileID: 0}
+  manualRootTop: {fileID: 0}
+  manualRootBottom: {fileID: 0}
+  manualRootMiddle: {fileID: 0}
+  manualRoot: {fileID: 0}
+  backdrop: {fileID: 0}
+  backdropAlpha: 0.9
+  backdropFadeTime: 0.25
 --- !u!4 &1311770354
 Transform:
   m_ObjectHideFlags: 0
@@ -5216,6 +5238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -0.1}
+  clip: {fileID: 0}
 --- !u!114 &1343600183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9419,6 +9442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OffsetContentOnClick
   offset: {x: 0, y: -0.1}
+  clip: {fileID: 0}
 --- !u!1 &2078321467
 GameObject:
   m_ObjectHideFlags: 0
