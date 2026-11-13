@@ -373,7 +373,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 341881409168306342, guid: cbcea40f1990a064b8ee0c39d68ba063, type: 3}
+  m_Sprite: {fileID: -8195802324163974304, guid: 2b6a7c367ee38dd45ab977f87318a995, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -542,7 +542,7 @@ MonoBehaviour:
   knockSpin: 90
   stopShort: 0.3
   face: {fileID: 1520463226760475994}
-  backSprite: {fileID: 341881409168306342, guid: cbcea40f1990a064b8ee0c39d68ba063, type: 3}
+  backSprite: {fileID: -8195802324163974304, guid: 2b6a7c367ee38dd45ab977f87318a995, type: 3}
   frontSprite: {fileID: 21300000, guid: 460a7bbf546435a4993dbb36c342a57d, type: 3}
 --- !u!1 &2543779382501764748
 GameObject:
@@ -694,7 +694,7 @@ GameObject:
   - component: {fileID: 565707809574650890}
   - component: {fileID: 1587734454943034452}
   m_Layer: 0
-  m_Name: Shadow
+  m_Name: OverlayShadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -839,7 +839,7 @@ GameObject:
   - component: {fileID: 3650143403104495756}
   - component: {fileID: 7817362167503690488}
   m_Layer: 0
-  m_Name: Shadow (1)
+  m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
