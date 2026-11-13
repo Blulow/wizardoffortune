@@ -1183,6 +1183,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GlowingSparkles
       objectReference: {fileID: 0}
+    - target: {fileID: 1874568560811763456, guid: 8d75774b8aa97444381137fac7cfb332, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5800611285948332710, guid: 8d75774b8aa97444381137fac7cfb332, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

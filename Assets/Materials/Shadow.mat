@@ -35,10 +35,10 @@ Material:
     m_Floats:
     - _BaseColorMask: 15
     - _ColorMask: 15
-    - _ShadowAlpha: 0.691
-    - _ShadowAngle: 321
+    - _ShadowAlpha: 0.885
+    - _ShadowAngle: 313
     - _ShadowBlur: 0
-    - _ShadowDistance: 0.039
+    - _ShadowDistance: 0.023
     - _ShadowSpread: 0
     - _Stencil: 0
     - _StencilComp: 8
