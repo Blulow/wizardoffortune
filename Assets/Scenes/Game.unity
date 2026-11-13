@@ -10881,7 +10881,6 @@ MonoBehaviour:
   manuals:
   - {fileID: 849466534}
   - {fileID: 1763632950}
-  - {fileID: 0}
   moveDur: 0
   nextButton: {fileID: 1662632951}
   prevButton: {fileID: 599776322}
