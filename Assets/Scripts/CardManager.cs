@@ -363,12 +363,17 @@ public class CardManager : MonoBehaviour
     {
        
         if (isPlaying) return;
+
         isPlaying = true;
         playHandButton.interactable = false;
         playHandButton.GetComponent<OffsetContentOnClick>().OffsetOn();
 
         try
         {
+            foreach (Card c in handCards)
+            {
+                c.SetColl(false);
+            }
             bool reduceLuck = false;
             bool addLuck = false;
             int combNum = 0;
@@ -469,6 +474,11 @@ public class CardManager : MonoBehaviour
             else
             {
                 RefillHand();
+            }
+
+            foreach (Card c in handCards)
+            {
+                c.SetColl(true);
             }
         }
         catch (OperationCanceledException) { }

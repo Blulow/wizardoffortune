@@ -50,13 +50,13 @@ public class Card : MonoBehaviour, IInteractable
 
     public void CardPlayed()
     {
-        HideColl();
+        SetColl(false);
         OnPlayed?.Invoke();
     }
 
-    public void HideColl()
+    public void SetColl(bool turnOff)
     {
-        collider.enabled = false;
+        collider.enabled = turnOff;
     }
 
     public void InitCard(int _id = -1, bool _isGold = false)
