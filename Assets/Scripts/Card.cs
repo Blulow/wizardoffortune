@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using UnityEditor.SettingsManagement;
 
 
 public class Card : MonoBehaviour, IInteractable

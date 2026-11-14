@@ -1,3 +1,6 @@
+using NUnit.Framework;
+using NUnit.Framework.Internal.Commands;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,8 +20,8 @@ public struct Combo
         type = _type;
         baseNumber = _baseNumber;
     }
-}
 
+}
 public static class CentralMechanics
 {
     public static int GetCardSum(List<Card> playerCards)
@@ -77,14 +80,14 @@ public static class CentralMechanics
             combo.type = Combo.ComboType.PAIR;
             combo.baseNumber = values.Keys.First();
         }
-        else if (playerCards.Count >= 3 && OnlyContainsValue<int, int>(values, 1) && consecutive.isConsecutive)
+        else if (playerCards.Count >= 3 && consecutive.isConsecutive)
         {
             Debug.Log("straight");
             combo.hasCombo = true;
             combo.type = Combo.ComboType.STRT;
             combo.baseNumber = consecutive.baseNumber;
         }
-        else if (suits.Count == 1 && HasValueGreaterOrEqualThan<Card.Suit, int>(suits, 3))
+        else if (HasValueGreaterOrEqualThan<Card.Suit, int>(suits, 3))
         {
             Debug.Log("flush");
             combo.hasCombo = true;
@@ -122,22 +125,9 @@ public static class CentralMechanics
         return (baseNumber, isConsecutive: gaps <= 1 );
     }
 
-    static bool OnlyContainsValue<TKey, TValue>(Dictionary<TKey, int> dict, int value)
-    {
-        foreach (KeyValuePair<TKey, int> pair in dict)
-        {
-            if (pair.Value != value)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     static bool HasValueGreaterOrEqualThan<TKey, TValue>(Dictionary<TKey, int> dict, int value)
     {
-        foreach (KeyValuePair<TKey, int> pair in dict)
+        foreach(KeyValuePair<TKey, int> pair in dict)
         {
             if (pair.Value >= value)
             {
