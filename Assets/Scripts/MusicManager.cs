@@ -59,7 +59,6 @@ public class MusicManager : MonoBehaviour
                 source.volume += startVolume * Time.deltaTime / fadeIn;
                 yield return null;
             }
-            Debug.Log("e");
         }
 
         source.volume = startVolume;
