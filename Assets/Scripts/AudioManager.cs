@@ -52,15 +52,12 @@ public class AudioManager : MonoBehaviour
             pitchedPool[i] = gameObject.AddComponent<AudioSource>();
             pitchedPool[i].playOnAwake = false;
         }
-    }
-
-    void Start()
-    {
         foreach (AudioChannel c in System.Enum.GetValues(typeof(AudioChannel)))
             SetVolume(c, PlayerPrefs.GetFloat("vol_" + c, 1f));
 
         SetMasterVolume(PlayerPrefs.GetFloat("vol_Master", 1f));
     }
+
 
     public static void SetVolume(AudioChannel channel, float linear01)
         => SetParam(channel.ToString(), linear01);
